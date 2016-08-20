@@ -1,0 +1,6 @@
+/public/assets*
+/tmp
+.idea
+err.html
+latest.dump
+stuff/
