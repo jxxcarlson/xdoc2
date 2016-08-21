@@ -107,6 +107,10 @@ class FindImages
     @images = [ImageRepository.find(arg)]
   end
 
+  def tag_search(arg)
+    @images = ImageRepository.find_by_tag(arg)
+  end
+
   def random_search(percentage)
     puts "*** Random search"
     @images = ImageRepository.random_sample(percentage)[0..9]
@@ -130,6 +134,8 @@ class FindImages
         random_search(arg)
       when 'id'
         id_search(arg)
+      when 'tag'
+        tag_search(arg)
     end
     @image_hash_array = @images.map { |image| image.hash }
   end
