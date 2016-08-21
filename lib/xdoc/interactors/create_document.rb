@@ -12,7 +12,12 @@ class CreateDocument
   def initialize(params, author_id)
     @params = params
     @author_id = author_id
-    @options = JSON.parse(params['options'])
+    opts = params['options'] || ""
+    if opts.length < 5
+      @options = {}
+    else
+      @options = JSON.parse(opts)
+    end
   end
 
   def create

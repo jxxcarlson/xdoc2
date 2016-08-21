@@ -53,7 +53,7 @@ class NSDocument
     hash['public'] = self.public
     hash['dict'] = self.dict
     hash['links'] = self.links
-    hash['tags'] = self.tags
+    hash['tags'] = self.stringify_tags
     hash
   end
 
@@ -81,7 +81,10 @@ class NSDocument
   ## document API:
   def hash
       { 'id': self.id,
+        'identifier': self.identifier,
         'title': self.title,
+        'kind': self.kind,
+        'tags': self.stringify_tags,
         'has_subdocuments': self.has_subdocuments,
         'url': "/documents/#{self.id}",
         'owner_id': self.owner_id,
@@ -91,7 +94,6 @@ class NSDocument
         'updated_at':  self.updated_at,
         'text': self.text,
         'rendered_text': self.rendered_text,
-        'tags': self.tags,
         'links': self.links
       }
   end
@@ -99,6 +101,7 @@ class NSDocument
   # Does not include text and rendered text
   def short_hash
     { 'id': self.id,
+      'identifier': self.identifier,
       'title': self.title,
       'has_subdocuments': self.has_subdocuments,
       'url': "/documents/#{self.id}",
@@ -107,7 +110,8 @@ class NSDocument
       'public': self.public,
       'created_at': self.created_at,
       'updated_at':  self.updated_at,
-      'tags': self.tags,
+      'kind': self.kind,
+      'tags': self.stringify_tags,
       'links': self.links
     }
   end
@@ -115,6 +119,7 @@ class NSDocument
   # Like above, but a hack to solve the :id vs 'id' problem -- BAAD!
   def short_hash2
     { 'id' => self.id,
+      'identifier' => self.identifier,
       'title' => self.title,
       'has_subdocuments' => self.has_subdocuments,
       'url' => "/documents/#{self.id}",
@@ -123,7 +128,8 @@ class NSDocument
       'public' => self.public,
       'created_at' => self.created_at,
       'updated_at' =>  self.updated_at,
-      'tags' => self.tags,
+      'kind' => self.kind,
+      'tags' => self.stringify_tags,
       'links' => self.links
     }
   end
@@ -150,7 +156,7 @@ class NSDocument
     self.dict = hash['dict'] if hash['dict']
     self.links['documents'] = hash['links']['documents'] if hash['links'] && hash['links']['documents']
     self.links['resources'] = hash['links']['resources'] if hash['links'] && hash['links']['resources']
-    self.tags = hash['tags'] if hash['tags']
+    self.update_tags_from_string hash['tags'] if hash['tags']
     DocumentRepository.update  self
   end
 
@@ -181,6 +187,23 @@ class NSDocument
     self.links['documents'] = subdocs_new
     DocumentRepository.update self
     "#{subdocs.count} => #{subdocs_new.count}"
+  end
+
+  def stringify_tags
+    str = ''
+    tags = self.tags
+    if tags.count > 0
+      self.tags[0..-2].each do |tag|
+        str += tag + ', '
+      end
+      str += tags[-1]
+    end
+    str
+  end
+
+  def update_tags_from_string(str)
+    self.tags = str.gsub(' ', '').split(',')
+    DocumentRepository.update self
   end
 
   def self.move(array, from, to)

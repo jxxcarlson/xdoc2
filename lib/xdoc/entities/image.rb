@@ -7,7 +7,7 @@ class Image
 
   def hash
     { :id => self.id, :title => self.title, :storage_url => self.url, :source => self.source,
-      :url => "/images/#{self.id}", :tags =>  self.stringify_tags }
+      :url => "/images/#{self.id}", :tags =>  self.stringify_tags , :content_type => self.content_type}
   end
 
   def stringify_tags

@@ -29,7 +29,7 @@ module Api::Controllers::Documents
 
       verify_request(request)
 
-      if @access.valid && @access.username == params['author_name'] 
+      if @access.valid && @access.username == params['author_name']
         result = UpdateDocument.new(params, request.query_string).call
         if result.status == 'success'
           self.body = result.hash
