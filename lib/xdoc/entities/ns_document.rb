@@ -125,6 +125,21 @@ class NSDocument
     }
   end
 
+  def parent_hash
+    self.links['parent']
+  end
+
+  def minimal_hash
+    { 'id': self.id,
+      'identifier': self.identifier,
+      'title': self.title,
+      'url': "/documents/#{self.id}",
+      'owner_id': self.owner_id,
+      'author': self.author_name,
+      'public': self.public,
+    }
+  end
+
   # Like above, but a hack to solve the :id vs 'id' problem -- BAAD!
   def short_hash2
     { 'id' => self.id,
@@ -267,7 +282,7 @@ class NSDocument
     self.subdocuments.each do |hash|
       puts "#{hash['id']}: #{hash['title']}"
       document = DocumentRepository.find hash['id']
-      document.links['parent'] = self.short_hash
+      document.links['parent'] = self.minimal_hash
       DocumentRepository.update document
     end
     self.subdocuments.map{ |sd| sd['id']}
@@ -275,7 +290,6 @@ class NSDocument
 
   def verify_parent_for_children
     self.subdocuments.each do |hash|
-      puts "#{hash['id']}: #{hash['title']}"
       document = DocumentRepository.find hash['id']
       if document.links['parent']['id'] ==  self.id
         puts "#{hash['id']} - #{hash['title']}: ok"
