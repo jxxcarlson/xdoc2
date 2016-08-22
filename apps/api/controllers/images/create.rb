@@ -31,10 +31,12 @@ module Api::Controllers::Images
         puts "Document #{document.id} created with resource #{media_resource}"
       end
 
-
-      self.body = { 'status': 'success', 'title': image.title, 'id': image.id,
+      reply =  { 'status': 'success', 'title': image.title, 'id': image.id,
                     'url': image.url, source: image.source,
                     'content_type': image.content_type, 'parent_document': document.id }.to_json
+
+       puts "REPLY in image creation with attachment:  #{reply}"
+       self.body = reply
     end
 
     def call(params)

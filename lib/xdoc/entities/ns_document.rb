@@ -70,12 +70,18 @@ class NSDocument
   # to the array "documents" of the hash
   # self.links
     def append_to_documents_link(doc)
-    doc = DocumentRepository.find doc if doc.class.name == 'Fixnum'
-    self.links ||= {}
-    self.links['documents'] ||= []
-    self.links['documents'] << doc.hash
-    DocumentRepository.update self
-  end
+      puts "in append_to_documents_link, doc = #{doc}"
+      case doc.class
+        when String
+          child_doc = DocumentRepository.find doc.to_i
+        when Fixnum
+          child_doc = DocumentRepository.find doc
+      end
+      self.links ||= {}
+      self.links['documents'] ||= []
+      self.links['documents'] << doc.short_hash
+      DocumentRepository.update self
+    end
 
 
   ## document API:

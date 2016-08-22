@@ -7,22 +7,6 @@ module Api::Controllers::Documents
     include Api::Action
     include Permission
 
-    def update_document(params)
-      id = params['id']
-      document = DocumentRepository.find(id)
-
-      if document
-        document.update_from_hash(params)
-        @result = ::RenderAsciidoc.new(source_text: document.text).call
-        document.rendered_text = @result.rendered_text
-        document.links['images'] = @result.image_map
-        DocumentRepository.update document
-        hash = {'status' => 'success', 'document' => document.hash }
-        self.body = hash.to_json
-      else
-        self.body = { "error" => "500 Server error: document not updated" }.to_json
-      end
-    end
 
     def call(params)
       puts "API: update"
