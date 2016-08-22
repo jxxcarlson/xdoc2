@@ -69,14 +69,17 @@ class NSDocument
   # Append the hash representation of doc
   # to the array "documents" of the hash
   # self.links
-    def append_to_documents_link(doc)
-      puts "in append_to_documents_link, doc = #{doc}"
+    def append_subdocument(doc)
+      puts "in append_subdocument, doc = #{doc}"
       case doc.class
         when String
           child_doc = DocumentRepository.find doc.to_i
         when Fixnum
           child_doc = DocumentRepository.find doc
       end
+      links = child_doc.links || {}
+      links['parent'] = self.short_hash
+      DocumentRepository.update child_doc
       self.links ||= {}
       self.links['documents'] ||= []
       self.links['documents'] << doc.short_hash
@@ -258,6 +261,33 @@ class NSDocument
     end
     idx
   end
+
+
+  def set_parent_for_children
+    self.subdocuments.each do |hash|
+      puts "#{hash['id']}: #{hash['title']}"
+      document = DocumentRepository.find hash['id']
+      document.links['parent'] = self.short_hash
+      DocumentRepository.update document
+    end
+    self.subdocuments.map{ |sd| sd['id']}
+  end
+
+  def verify_parent_for_children
+    self.subdocuments.each do |hash|
+      puts "#{hash['id']}: #{hash['title']}"
+      document = DocumentRepository.find hash['id']
+      if document.links['parent']['id'] ==  self.id
+        puts "#{hash['id']} - #{hash['title']}: ok"
+      else
+        puts "#{hash['id']} - #{hash['title']}: FAIL"
+      end
+      DocumentRepository.update document
+    end
+    self.subdocuments.map{ |sd| sd['id']}
+  end
+
+
 
 
 

@@ -37,6 +37,7 @@ class RenderAsciidoc
       old_ref = "image::#{id}[#{label}]"
       image = ImageRepository.find id
       @image_map[id] = {'url': image.url, 'title': image.title}
+      puts "process_images, image url = #{image.url}}"
       new_ref = "image::#{image.url}[#{label}]"
       puts "process_images: new_ref = #{new_ref}"
       @source_text = @source_text.sub(old_ref, new_ref)

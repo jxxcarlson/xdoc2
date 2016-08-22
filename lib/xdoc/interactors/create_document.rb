@@ -45,7 +45,7 @@ class CreateDocument
       puts "  -- Create child document ..., current document id = #{@params['current_document_id']}"
       @parent_document = DocumentRepository.find @params['current_document_id']
       if @parent_document
-        @parent_document.append_to_documents_link @new_document
+        @parent_document.append_subdocument @new_document
         DocumentRepository.update @parent_document
         puts "CreateDocument: attached #{@new_document.title} to #{@parent_document.title}"
         @status = 'success'
@@ -63,7 +63,7 @@ class CreateDocument
       end
 
       last_index = @parent_document.links['documents'].count
-      @parent_document.append_to_documents_link @new_document
+      @parent_document.append_subdocument @new_document
       puts "CreateDocument: attached #{@new_document.title} to #{@parent_document.title}"
       target_index = @parent_document.index_of_subdocument current_document
       target_index += 1 if @options['position'] == 'below'

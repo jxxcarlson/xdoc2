@@ -36,7 +36,7 @@ class UpdateDocument
     puts "  -- parent_document = #{parent_document.title}"
     puts "  -- child_document  = #{@document.title}"
     if parent_document
-      parent_document.append_to_documents_link(@document)
+      parent_document.append_subdocument(@document)
       @updated_document = parent_document
       @hash = @updated_document.short_hash
       else @status = 'error'
@@ -49,7 +49,7 @@ class UpdateDocument
     _verb, parent_id = command.split('=')
     parent_document = DocumentRepository.find parent_id
     if parent_document
-      parent_document.append_to_documents_link(@document)
+      parent_document.append_subdocument(@document)
       _verb, sibling_id = command.split('=')
       sibling_document = DocumentRepository.find sibling_id
       index = parent_document.index_of_subdocument(sibling_document)
