@@ -17,12 +17,17 @@ module Api::Controllers::Documents
     end
 
     def  get_document(id)
-      puts "API: read id = #{id}"
       if id =~ /\A[1-9][0-9]*\z/
         document = DocumentRepository.find(id)
       else
         document = DocumentRepository.find_by_identifier(id)
       end
+      if @access
+        puts "API: read, #{@access.username}, #{id}, #{document.title}"
+      else
+        puts "API: read, anonymous, #{id}, #{document.title}"
+      end
+
       if document
         if document.has_subdocuments
           document.update_document_links
@@ -34,6 +39,10 @@ module Api::Controllers::Documents
     def call(params)
 
       document = get_document(params['id'])
+
+      if document == nil
+        puts "Can't find document for id = #{params['id']}"
+      end
 
       token = request.env["HTTP_ACCESSTOKEN"]
       @access = GrantAccess.new(token).call

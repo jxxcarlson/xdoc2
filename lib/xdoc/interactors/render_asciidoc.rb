@@ -65,7 +65,6 @@ class RenderAsciidoc
   end
 
   def call
-    puts "CALLING INTERACTOR RENDERASCIIDOC"
     base_options = { :safe => :safe, :source_highlighter => :coderay, :coderay_css =>:class }
     options = base_options.merge @new_options
     preprocess

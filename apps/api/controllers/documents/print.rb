@@ -10,7 +10,7 @@ module Api::Controllers::Documents
 
 
       def  get_document(id)
-        puts "API: read id = #{id}"
+        puts "API: print id = #{id}"
         if id =~ /\A[1-9][0-9]*\z/
           DocumentRepository.find(id)
         else

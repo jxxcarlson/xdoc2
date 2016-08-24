@@ -6,7 +6,7 @@ module Api::Controllers::Users
     include Api::Action
 
     def create_document(user)
-      document = NSDocument.new(owner_id: user.id, title: 'First Document')
+      document = NSDocument.new(owner_id: user.id, author_name: user.username,   title: 'First Document')
       document.text = 'This is only a test.'
       document.kind = 'text'
       document.public = false
