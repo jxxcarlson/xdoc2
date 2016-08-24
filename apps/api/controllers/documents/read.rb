@@ -38,14 +38,14 @@ module Api::Controllers::Documents
 
     def call(params)
 
+      token = request.env["HTTP_ACCESSTOKEN"]
+      @access = GrantAccess.new(token).call
+
       document = get_document(params['id'])
 
       if document == nil
         puts "Can't find document for id = #{params['id']}"
       end
-
-      token = request.env["HTTP_ACCESSTOKEN"]
-      @access = GrantAccess.new(token).call
 
       if @access.valid
         return_document(document)
