@@ -8,6 +8,18 @@ module Api::Controllers::Documents
   class Create
     include Api::Action
 
+
+
+    def create_document
+      result = CreateDocument.new(params, @access.user_id).call
+      if result.status == 'success'
+        @reply  = {'status' => 'success', 'document' => result.new_document.to_hash }
+        puts "Created document with hash = #{hash}"
+      else
+        @reply = '{ "error" => "500 Server error: document not created" }'
+      end
+    end
+
     def call(params)
 
       query_string =  request.query_string || ""
@@ -21,29 +33,15 @@ module Api::Controllers::Documents
 
       verify(params)
 
-      def foo
-        if created_document
-        # response.status = 200
-        hash = {'status' => 'success', 'document' => created_document.to_hash }
-        puts "Created document with hash = #{hash}"
-        self.body = hash.to_json
-        else
-          self.body = '{ "error" => "500 Server error: document not created" }'
-        end
-      end
 
       if @access.valid
-        result = CreateDocument.new(params, @access.user_id).call
-        if result.status == 'success'
-          hash = {'status' => 'success', 'document' => result.new_document.to_hash }
-          puts "Created document with hash = #{hash}"
-          self.body = hash.to_json
-        else
-          self.body = '{ "error" => "500 Server error: document not created" }'
-        end
+        create_document
       else
-        deny_access
+        @reply = {'status': 'error'}
       end
+
+      puts "@reply = #{@repy}"
+      self.body = @reply.to_json
 
     end
 

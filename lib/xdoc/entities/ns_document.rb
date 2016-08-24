@@ -69,21 +69,23 @@ class NSDocument
   # Append the hash representation of doc
   # to the array "documents" of the hash
   # self.links
-    def append_subdocument(doc)
-      puts "in append_subdocument, doc = #{doc}"
-      case doc.class
-        when String
-          child_doc = DocumentRepository.find doc.to_i
-        when Fixnum
-          child_doc = DocumentRepository.find doc
-      end
-      links = child_doc.links || {}
-      links['parent'] = self.short_hash
-      DocumentRepository.update child_doc
-      self.links ||= {}
-      self.links['documents'] ||= []
-      self.links['documents'] << doc.short_hash
-      DocumentRepository.update self
+    def adopt_child(child)
+      parent = self
+      puts "Appending subdocument #{child.title} to #{parent.title}"
+
+      # point the parent link of the child to the parent
+      links = child.links || {}
+      links['parent'] = parent.minimal_hash
+      child.links = links
+      DocumentRepository.update child
+      puts "Confirm: parent of #{child.title} is #{child.parent_name}"
+
+      # Add an entry in the parent to point to the child
+      parent.links ||= {}
+      parent.links['documents'] ||= []
+      parent.links['documents'] << child.short_hash
+      DocumentRepository.update parent
+      puts "Confirm: chidren of #{parent.title}: #{parent.child_names}"
     end
 
 
@@ -128,6 +130,36 @@ class NSDocument
   def parent_hash
     self.links['parent']
   end
+
+  def parent_name
+    parent_hash['title'] || parent_hash[:title]
+  end
+
+  def remove_parent
+    name = self.parent_name
+    self.links['parent'] = {}
+    DocumentRepository.update self
+    name
+  end
+
+  def remove_child(child)
+    if child.class == Integer
+      child = DocumentRepository.find child
+    end
+    index_of_child = self.index_of_subdocument(child)
+    documents = self.links['documents']
+    documents.delete_at index_of_child
+    self.links['documents'] = documents
+    DocumentRepository.update self
+  end
+
+  def remove_children
+    names = self.child_names
+    self.links['documents'] = []
+    DocumentRepository.update self
+    names
+  end
+
 
   def minimal_hash
     { 'id': self.id,
@@ -189,6 +221,10 @@ class NSDocument
 
   def subdocuments
     self.links['documents'] || []
+  end
+
+  def child_names
+    self.subdocuments.map{ |x| x['title'] || x[:title]}
   end
 
   def has_subdocuments

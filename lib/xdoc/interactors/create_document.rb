@@ -42,10 +42,11 @@ class CreateDocument
     puts "  @options['position'] = #{@options['position']}"
 
     if @options['child'] == true
-      puts "  -- Create child document ..., current document id = #{@params['current_document_id']}"
+
       @parent_document = DocumentRepository.find @params['current_document_id']
       if @parent_document
-        @parent_document.append_subdocument @new_document
+        puts "I am going attach a new sibling #{@new_document.title } of #{@parent_document.title}"
+        @parent_document.adopt_child @new_document
         DocumentRepository.update @parent_document
         puts "CreateDocument: attached #{@new_document.title} to #{@parent_document.title}"
         @status = 'success'
@@ -56,19 +57,22 @@ class CreateDocument
 
     if (@options['position'] == 'above') || (@options['position'] == 'below')
 
+
       @parent_document = DocumentRepository.find @params['parent_document_id']
       current_document = DocumentRepository.find @params['current_document_id']
+      puts "\nI am going attach a new sibling #{@new_document.title } of #{current_document.title}\n"
+
       if @parent_document == nil or current_document == nil
         @status = 'error'
       end
 
       last_index = @parent_document.links['documents'].count
-      @parent_document.append_subdocument @new_document
-      puts "CreateDocument: attached #{@new_document.title} to #{@parent_document.title}"
+      @parent_document.adopt_child @new_document
+      puts "\nCreateDocument: attached #{@new_document.title} to #{@parent_document.title}\n"
       target_index = @parent_document.index_of_subdocument current_document
       target_index += 1 if @options['position'] == 'below'
       @parent_document.move_subdocument(last_index, target_index)
-      puts "CreateDocument: movde #{@new_document.title} to index #{target_index} of #{@parent_document.title}"
+      puts "\nCreateDocument: move #{@new_document.title} to index #{target_index} of #{@parent_document.title}\n"
 
       DocumentRepository.update @parent_document
       @status = 'success'
