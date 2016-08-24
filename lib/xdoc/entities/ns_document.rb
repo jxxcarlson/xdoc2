@@ -227,6 +227,10 @@ class NSDocument
     self.subdocuments.map{ |x| x['title'] || x[:title]}
   end
 
+  def child_ids
+    self.subdocuments.map{ |x| x['id'] || x[:id]}
+  end
+
   def has_subdocuments
     self.subdocuments != []
   end
@@ -280,7 +284,9 @@ class NSDocument
 
   def move_subdocument(from, to)
     subdocs = self.subdocuments
+    puts "before move: #{subdocs.map{|x| x['id']}}"
     NSDocument.move(subdocs, from, to)
+    puts "after move: #{subdocs.map{|x| x['id']}}"
     self.links['documents'] = subdocs
     DocumentRepository.update self
   end

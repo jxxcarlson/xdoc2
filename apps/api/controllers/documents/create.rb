@@ -13,7 +13,9 @@ module Api::Controllers::Documents
     def create_document
       result = CreateDocument.new(params, @access.user_id).call
       if result.status == 'success'
-        @reply  = {'status' => 'success', 'document' => result.new_document.to_hash }
+        hash = result.new_document.to_hash
+        puts "\n\nNEW DOCUMENT: #{hash}\n\n"
+        @reply  = {'status' => 'success', 'document' => hash }
         puts "Created document with hash = #{hash}"
       else
         @reply = '{ "error" => "500 Server error: document not created" }'

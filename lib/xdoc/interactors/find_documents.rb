@@ -40,7 +40,7 @@ require 'hanami/interactor'
 class FindDocuments
   include Hanami::Interactor
 
-  expose :documents, :document_count, :document_hash_array
+  expose :documents, :document_count, :document_hash_array, :first_document
 
   def initialize(query_string, access)
     @query_string = query_string.downcase
@@ -106,7 +106,6 @@ class FindDocuments
   def random_search(percentage)
     @documents = DocumentRepository.random_sample(percentage)[0..50]
   end
-
   def search(query)
     @command, arg = query
     case @command
@@ -127,7 +126,7 @@ class FindDocuments
       when 'random'
         random_search(arg)
     end
-    @document_hash_array = @documents.map { |document| document.short_hash }
+    @document_hash_array = @documents.map { |document| document ? document.short_hash : 'null'}.select{|x| x != 'null'}
   end
 
   ######## FILTER ########
@@ -195,6 +194,7 @@ class FindDocuments
   def filter_documents
     set_id_array
     if @documents.class.name == 'Array'
+      puts "IN FILTER DOCUMENTS: #{@documents}"
       @documents = @documents.select{ |doc| @id_array.include?(doc.id) }
     else
       @documents = @documents.all.select{ |doc| @id_array.include?(doc.id) }
@@ -213,6 +213,26 @@ class FindDocuments
 
   end
 
+  def get_first_document
+    @first_document = @documents[0]
+    puts "@first_document = #{@first_document.hash}"
+  end
+
+  def handle_empty_search_result
+    if @documents == []
+      default_document = DocumentRepository.find(ENV['DEFAULT_DOCUMENT_ID'])
+      @documents = [default_document]
+      @document_hash_array = @documents.map { |document| document.short_hash }
+    end
+  end
+
+  def trim_random_sample
+    if @command == 'random'
+      @document_hash_array = @document_hash_array[0..4]
+    end
+  end
+
+
   ######## CALL ########
 
   def call
@@ -222,15 +242,10 @@ class FindDocuments
     query = @queries.shift
     search(query)
     filter_hash_array
-    if @command == 'random'
-      @document_hash_array = @document_hash_array[0..4]
-    end
+    trim_random_sample
     filter_documents
-    if @documents == []
-      default_document = DocumentRepository.find(ENV['DEFAULT_DOCUMENT_ID'])
-      @documents = [default_document]
-      @document_hash_array = @documents.map { |document| document.short_hash }
-    end
+    handle_empty_search_result
+    get_first_document
     @document_count = @documents.count
   end
 end

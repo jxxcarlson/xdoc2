@@ -63,19 +63,22 @@ class CreateDocument
       puts "\nI am going attach a new sibling #{@new_document.title } of #{current_document.title}\n"
 
       if @parent_document == nil or current_document == nil
-        @status = 'error'
+        @status = 'error, could not attach document'
+      else
+
+        documents = @parent_document.links || []
+        last_index = documents.count
+        @parent_document.adopt_child @new_document
+        puts "\nCreateDocument: attached #{@new_document.title} to #{@parent_document.title}\n"
+        target_index = @parent_document.index_of_subdocument current_document
+        target_index += 1 if @options['position'] == 'below'
+        @parent_document.move_subdocument(last_index, target_index)
+        puts "\nCreateDocument: move #{@new_document.title} to index #{target_index} of #{@parent_document.title}\n"
+
+        DocumentRepository.update @parent_document
+        @status = 'success'
       end
 
-      last_index = @parent_document.links['documents'].count
-      @parent_document.adopt_child @new_document
-      puts "\nCreateDocument: attached #{@new_document.title} to #{@parent_document.title}\n"
-      target_index = @parent_document.index_of_subdocument current_document
-      target_index += 1 if @options['position'] == 'below'
-      @parent_document.move_subdocument(last_index, target_index)
-      puts "\nCreateDocument: move #{@new_document.title} to index #{target_index} of #{@parent_document.title}\n"
-
-      DocumentRepository.update @parent_document
-      @status = 'success'
     end
 
   end

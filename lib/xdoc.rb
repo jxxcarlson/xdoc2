@@ -112,6 +112,20 @@ Hanami::Model.configure do
 
     end
 
+    collection :acl do
+      entity Acl
+      repository AclRepository
+
+      attribute :id, Integer
+      attribute :name, String
+      attribute :owner_id, Integer
+      attribute :permission, String
+      attribute :members, PGStringArray
+      attribute :created_at, DateTime
+      attribute :updated_at, DateTime
+
+    end
+
   end
 
 

@@ -23,7 +23,16 @@ module Api::Controllers::Documents
 
       search_result = FindDocuments.new(request.query_string, @access).call
 
-      self.body = { :status => 'success', :document_count => search_result.document_count, :documents => search_result.document_hash_array }.to_json
+      result  = { :status => 'success',
+                    :document_count => search_result.document_count,
+                    :documents => search_result.document_hash_array,
+                    :first_document => search_result.first_document.hash
+                  }.to_json
+
+      result2 = JSON.parse(result)
+      puts "\n\nfirst_document::: #{result2['first_document']['title']}\n\n"
+
+      self.body = result
     end
 
 
