@@ -54,7 +54,7 @@ class UpdateDocument
       sibling_document = DocumentRepository.find sibling_id
       index = parent_document.index_of_subdocument(sibling_document)
       last_index = parent.documents.subdocuments.count - 1
-      parent_document.move_subocument(last_index,index)
+      parent_document.move_subdocument(last_index,index)
       @updated_document = parent_document
       @hash = @updated_document.short_hash
     else @status = 'error'
