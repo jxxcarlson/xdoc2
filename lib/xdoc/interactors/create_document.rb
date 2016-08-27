@@ -25,6 +25,8 @@ class CreateDocument
     author = UserRepository.find @author_id
     document.owner_id = author.id
     document.author_name = author.username
+    document.text = "(Dummy text for ew document #{document.title})"
+    document.rendered_text = "(Dummy text for new document #{document.title})"
     @new_document = DocumentRepository.create document
     puts "CreateDocument: created #{@new_document.title} (#{@new_document.id})"
     @status = 'success'

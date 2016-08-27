@@ -29,11 +29,16 @@ module Api::Controllers::Images
         document.links['resources'] = resources
         document = DocumentRepository.update document
         puts "Document #{document.id} created with resource #{media_resource}"
-      end
 
-      reply =  { 'status': 'success', 'title': image.title, 'id': image.id,
-                    'url': image.url, source: image.source,
-                    'content_type': image.content_type, 'parent_document': document.id }.to_json
+        reply =  { 'status': 'success', 'title': image.title, 'id': image.id,
+                   'url': image.url, source: image.source,
+                   'content_type': image.content_type, 'parent_document': document.id }.to_json
+      else
+        reply =  { 'status': 'success', 'title': image.title, 'id': image.id,
+                   'url': image.url, source: image.source,
+                   'content_type': image.content_type, 'parent_document': 0 }.to_json
+      end
+      
 
        puts "REPLY in image creation with attachment:  #{reply}"
        self.body = reply

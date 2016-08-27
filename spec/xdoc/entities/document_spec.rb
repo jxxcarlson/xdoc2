@@ -71,7 +71,7 @@ describe NSDocument do
     resource_array = [ { 'id' => 100, 'type' => 'image'}, { 'id' => 200, 'title' => 'Bio', 'type' => 'PDF'} ]
     hash['links'] = { 'documents' => document_array, 'resources' => resource_array}
 
-    hash['tags'] = [ 'physics', 'quantum' ]
+    # hash['tags'] = 'physics, quantum'
     hash['kind'] = 'asciidoc'
 
 
@@ -96,8 +96,101 @@ describe NSDocument do
     assert @doc.dict['favorite_flavor'] == 'vanilla'
     assert @doc.links['documents'] == document_array
     assert @doc.links['resources'] == resource_array
-    assert @doc.tags == hash['tags']
+    # assert @doc.tags == hash['tags']
     assert @doc.kind == hash['kind']
+
+  end
+
+ it 'can attach a child document and then detach it t6' do
+
+   d = NSDocument.new(title: 'A', text: 'foo')
+   a = DocumentRepository.create d
+
+   d = NSDocument.new(title: 'B', text: 'bar')
+   b = DocumentRepository.create d
+
+   a.adopt_child b
+
+   assert b.parent_name == a.title
+   assert a.child_names == [b.title]
+
+   a.remove_child b
+   b.remove_parent
+
+   assert b.parent_id == 0
+   assert b.child_names == []
+
+ end
+
+  it 'can unlink a document t7' do
+
+    d = NSDocument.new(title: 'A', text: 'top')
+    a = DocumentRepository.create d
+
+    d = NSDocument.new(title: 'B', text: 'middle')
+    b = DocumentRepository.create d
+
+    d = NSDocument.new(title: 'C', text: 'bottom')
+    c = DocumentRepository.create d
+
+    a.adopt_child b
+    b.adopt_child c
+
+    assert a.child_names == ['B']
+    assert b.parent_name == 'A'
+
+    assert b.child_names == ['C']
+    assert c.parent_name == 'B'
+
+    b.unlink
+
+    a = DocumentRepository.find a.id
+    b = DocumentRepository.find b.id
+    c = DocumentRepository.find c.id
+
+    assert a.child_names == []
+    assert c.parent_name == ''
+
+    assert b.parent_name == ''
+    assert b.child_names == []
+
+
+  end
+
+
+  it 'can delete a document and cleanup after itself t8' do
+
+    d = NSDocument.new(title: 'A', text: 'top')
+    a = DocumentRepository.create d
+
+    d = NSDocument.new(title: 'B', text: 'middle')
+    b = DocumentRepository.create d
+
+    d = NSDocument.new(title: 'C', text: 'bottom')
+    c = DocumentRepository.create d
+
+    a.adopt_child b
+    b.adopt_child c
+
+    assert a.child_names == ['B']
+    assert b.parent_name == 'A'
+
+    assert b.child_names == ['C']
+    assert c.parent_name == 'B'
+
+    bid = b.id
+
+    NSDocument.delete b
+
+    a = DocumentRepository.find a.id
+    c = DocumentRepository.find c.id
+
+    assert a.child_names == []
+    assert c.parent_name == ''
+
+    assert (DocumentRepository.find bid) == nil
+
+
 
   end
 
