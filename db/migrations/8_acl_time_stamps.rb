@@ -7,6 +7,7 @@ Sequel.migration do
       column :name, "text", :null=>false
       column :permission, "text", :null=>false
       column :members, "text[]"
+      column :documents, "integer[]"
       column :created_at, "timestamp without time zone"
       column :updated_at, "timestamp without time zone"
     end

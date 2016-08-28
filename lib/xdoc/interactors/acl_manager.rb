@@ -8,47 +8,83 @@ class ACLManager
 
   expose :commands, :status
 
-  def initialize(command)
+  def initialize(command, owner_id)
     @commands = command.split('&').map{|command| command.split('=')} || []
     @queue = @commands.dup
-    puts "\ncommands = #{@commands}\n\n"
+    @owner_id = owner_id
     @status = 'error'
   end
 
   def create_acl
-    puts "\nverb = #{@verb}, object = #{@object}\n\n"
-    verb, permission = @commands.shift
-    @status = 'success'
+    verb, permission = @queue.shift
+    if verb == 'permission'
+      Acl.create(name: @object, permission: permission, owner_id: @owner_id)
+      @status = 'success'
+    else
+      @status = 'error'
+    end
   end
 
   def remove_acl
-    puts "\nverb = #{@verb}, object = #{@object}\n\n"
-    @status = 'success'
+    @status = Acl.remove(@object)
   end
 
   def add_user
-    puts "\nverb = #{@verb}, object = #{@object}\n\n"
-    @status = 'success'
+    verb, name = @queue.shift
+    if verb == 'acl'
+      acl = AclRepository.find_by_name name
+      acl.add_member(@object)
+      @status = 'success'
+    else
+      @status = 'error'
+    end
   end
 
   def remove_user
-    puts "\nverb = #{@verb}, object = #{@object}\n\n"
-    @status = 'success'
+    verb, name = @queue.shift
+    if verb == 'acl'
+      acl = AclRepository.find_by_name name
+      acl.remove_member(@object)
+      @status = 'success'
+    else
+      @status = 'error'
+    end
   end
 
   def add_document
-    puts "\nverb = #{@verb}, object = #{@object}\n\n"
-    @status = 'success'
+    verb, name = @queue.shift
+    if verb == 'acl'
+      acl = AclRepository.find_by_name name
+      acl.add_document(@object)
+      @status = 'success'
+    else
+      @status = 'error'
+    end
   end
 
   def remove_document
-    puts "\nverb = #{@verb}, object = #{@object}\n\n"
-    @status = 'success'
+    verb, name = @queue.shift
+    if verb == 'acl'
+      acl = AclRepository.find_by_name name
+      acl.remove_document(@object)
+      @status = 'success'
+    else
+      @status = 'error'
+    end
   end
 
   def request_permission
-    puts "\nverb = #{@verb}, object = #{@object}\n\n"
-    @status = 'success'
+    hash = {}
+    @queue.each do |key, value|
+      hash[key] = value
+    end
+    acl = AclRepository.find_by_name hash['acl']
+    ok = acl.contains_document(hash['document'].to_i) && acl.contains_member(hash['user']) && @object == acl.permission
+    if ok
+      @status = 'success'
+    else
+      @status = 'error'
+    end
   end
 
   def call
@@ -56,12 +92,11 @@ class ACLManager
     return if @queue == []
 
     @verb, @object = @queue.shift
+
     return if !(['create_acl', 'remove_acl', 'add_user', 'remove_user', 'add_document', 'remove_document', 'request_permission'].include? @verb)
 
-    if @queue != []
+    send @verb
 
-      send @verb
-    end
 
   end
 

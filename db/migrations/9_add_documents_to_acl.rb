@@ -1,0 +1,3 @@
+Sequel.migration do
+
+end

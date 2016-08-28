@@ -288,7 +288,8 @@ class NSDocument
 
 
   def update_document_links
-    subdocs = self.subdocuments
+    # first filter out bad data (and throw it away):
+    subdocs = self.subdocuments.select{ |x| x != nil}
     subdocs_new = []
     subdocs.each do |dochash|
       valid = true

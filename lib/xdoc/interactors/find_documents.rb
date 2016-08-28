@@ -66,6 +66,7 @@ class FindDocuments
   def user_search(username)
     user = UserRepository.find_by_username(username)
     @documents = DocumentRepository.find_by_owner(user.id)
+    @documents = @documents.all.select{ |doc| doc.parent_id == 0}
   end
 
   def scope_search(arg)
