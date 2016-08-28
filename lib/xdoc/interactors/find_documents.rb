@@ -159,7 +159,7 @@ class FindDocuments
 
 
   def apply_filter(query, hash_array)
-    
+
     command, arg = query
 
     case command

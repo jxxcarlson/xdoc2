@@ -9,7 +9,8 @@ module Api::Controllers::Documents
 
 
     def call(params)
-      puts "API: update"
+      puts "API: update #{params['id']}"
+      puts "  -- kind: #{params['kind']}"
 
       verify_request(request)
 

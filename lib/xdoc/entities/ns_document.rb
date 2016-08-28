@@ -224,7 +224,7 @@ class NSDocument
 
   def unlink
     # remove oneself from parent
-    self.parent.remove_child(self)
+    self.parent.remove_child(self) if self.parent
 
     # remove parent of chldren
     children = self.subdocuments.map{ |subdoc| DocumentRepository.find subdoc[:id]}
