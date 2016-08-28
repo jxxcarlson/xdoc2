@@ -104,7 +104,8 @@ class FindDocuments
   end
 
   def random_search(percentage)
-    @documents = DocumentRepository.random_sample(percentage)[0..50]
+    n = ENV['DEFAULT_DOCUMENT_ID']
+    @documents = DocumentRepository.random_sample(percentage).select{ |doc| doc.id != n}[0..50]
   end
   def search(query)
     @command, arg = query
@@ -158,8 +159,7 @@ class FindDocuments
 
 
   def apply_filter(query, hash_array)
-    # puts "HASH ARRAY BEFORE:"
-    # hash_array.each { |item| puts item }
+    
     command, arg = query
 
     case command
@@ -194,7 +194,6 @@ class FindDocuments
   def filter_documents
     set_id_array
     if @documents.class.name == 'Array'
-      puts "IN FILTER DOCUMENTS: #{@documents}"
       @documents = @documents.select{ |doc| @id_array.include?(doc.id) }
     else
       @documents = @documents.all.select{ |doc| @id_array.include?(doc.id) }
@@ -215,7 +214,6 @@ class FindDocuments
 
   def get_first_document
     @first_document = @documents[0]
-    puts "@first_document = #{@first_document.hash}"
   end
 
   def handle_empty_search_result
