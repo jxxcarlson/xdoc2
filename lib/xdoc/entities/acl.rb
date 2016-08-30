@@ -93,5 +93,20 @@ class Acl
     result
   end
 
+  def self.grant_permission(user, document, permission)
+
+    document = document.id if document.class == String
+    document = DocumntRepository.find document if document.class == Fixnum
+    user = user.id  if user.class == String
+    user = UserRepository.find user if user.class == Fixnum
+
+    return true if document.owner_id == user.id
+    return true if permission == 'read' and document.public
+
+    access_list = document.access_list
+    Acl.grants(user, document.id, permission, access_list)
+
+  end
+
 
 end

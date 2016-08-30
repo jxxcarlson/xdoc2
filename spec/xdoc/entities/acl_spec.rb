@@ -126,5 +126,30 @@ describe Acl do
 
   end
 
+  it 'can inspect the acl lists of a document to see whether a given user is granted permission for a given operation ttt' do
+
+
+    acl1 = Acl.create(name: 'abc', owner_id: 30, permission: 'edit')
+    acl1.add_member('joe')
+    acl1.add_member('sue')
+    acl1.add_document(22)
+
+
+    acl2 = Acl.create(name: 'def', owner_id: 30, permission: 'edit')
+    acl2.add_member('fred')
+    acl2.add_member('laura')
+    acl2.add_document(33)
+
+    acl_list = [acl1, acl2]
+
+    document = NSDocument.new(id: 33, title: 'test', dict: { acl: ['abc', 'def']})
+
+    assert document.id == 33
+    assert document.acl_lists == ['abc', 'def']
+
+
+
+  end
+
 
 end
