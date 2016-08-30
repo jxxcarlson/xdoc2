@@ -372,7 +372,10 @@ class NSDocument
     idx
   end
 
-
+  def acl_lists
+    dict = self.dict || {}
+    dict['acl'] || dict[:acl]
+  end
 
 
 
