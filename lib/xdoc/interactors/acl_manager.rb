@@ -1,7 +1,8 @@
 require 'hanami/interactor'
 
 
-
+# Process API requests to create or modify acls
+# and to interrogate acls for permission
 class ACLManager
 
   include Hanami::Interactor

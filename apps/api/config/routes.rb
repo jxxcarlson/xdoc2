@@ -1,3 +1,4 @@
+post '/documents', to: 'documents#acl'
 post '/images/:id', to: 'images#update'
 get '/printdocument/:id', to: 'documents#print'
 get '/test', to: 'test#echo'
