@@ -61,4 +61,14 @@ describe CreateUser do
 
   end
 
+  it 'can set preferences for a user t4' do
+
+    user = User.new(username: 'johndoe')
+    UserRepository.create user
+    user = UserRepository.first
+    user.set_preference('doc_format', 'asciidoc-latex')
+    assert user.get_preference('doc_format') == 'asciidoc-latex'
+
+  end
+
 end
