@@ -49,5 +49,24 @@ class User
     UserRepository.update self
   end
 
+  def join_acl(name)
+    acl = AclRepository.find_by_name(name)
+    return if acl == nil
+    return if !(acl.contains_member(self.username))
+    dict = self.dict || {}
+    my_acls = dict['acl'] || []
+    if !(my_acls.include? name)
+      my_acls << name
+      self.dict  ||= {}
+      self.dict['acl'] = my_acls
+      UserRepository.update self
+    end
+  end
+
+  def acls
+    dict = self.dict || {}
+    dict['acl'] || []
+  end
+
 
 end
