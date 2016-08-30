@@ -86,6 +86,18 @@ class FindDocuments
     @documents = DocumentRepository.find_by_owner_and_fuzzy_title(user.id, title)
   end
 
+  # command: 'shared=user,group'
+  # example: 'shared=jc,test'
+  def shared_search(arg)
+    user_name, group = arg.split(',')
+    puts "\n\nuser_name = #{user_name}"
+    puts "\n\ngroup = #{group}"
+    user = UserRepository.find_by_username user_name
+    puts "user.has_acl? group = #{user.has_acl group}"
+    @documents = [] if !(user.has_acl group)
+    DocumentRepository.all.select{ |doc| doc.has_acl(group)}
+  end
+
   def user_public_search(arg)
     username, title = arg.split('.')
     user = UserRepository.find_by_username(username)
@@ -115,6 +127,8 @@ class FindDocuments
         scope_search(arg)
       when 'user'
         user_search(arg)
+      when 'shared'
+        shared_search(arg)
       when 'title'
         title_search(arg)
       when 'user.title'
@@ -236,7 +250,7 @@ class FindDocuments
 
   def call
     parse
-    apply_permissions
+    # apply_permissions
     normalize
     query = @queries.shift
     search(query)

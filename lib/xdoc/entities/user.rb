@@ -68,5 +68,9 @@ class User
     dict['acl'] || []
   end
 
+  def has_acl(name)
+    self.acls.include? name
+  end
+
 
 end

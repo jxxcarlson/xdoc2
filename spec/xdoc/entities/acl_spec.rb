@@ -145,7 +145,7 @@ describe Acl do
     document = NSDocument.new(id: 33, title: 'test', dict: { acl: ['abc', 'def']})
 
     assert document.id == 33
-    assert document.acl_lists == ['abc', 'def']
+    assert document.acls == ['abc', 'def']
 
 
 

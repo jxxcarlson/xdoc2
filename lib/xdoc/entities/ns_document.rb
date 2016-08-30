@@ -372,11 +372,33 @@ class NSDocument
     idx
   end
 
-  def acl_lists
+  def acls
     dict = self.dict || {}
-    dict['acl'] || dict[:acl]
+    dict['acl'] || dict[:acl] || []
   end
 
+  def has_acl(name)
+    self.acls.include? name
+  end
+
+
+  def join_acl(name)
+    acl = AclRepository.find_by_name(name)
+    puts 'A'
+    return if acl == nil
+    puts 'B'
+    return if !(acl.contains_document(self.id))
+    puts 'C'
+    dict = self.dict || {}
+    my_acls = dict['acl'] || []
+    if !(my_acls.include? name)
+      puts 'D'
+      my_acls << name
+      self.dict  ||= {}
+      self.dict['acl'] = my_acls
+      DocumentRepository.update self
+    end
+  end
 
 
 
