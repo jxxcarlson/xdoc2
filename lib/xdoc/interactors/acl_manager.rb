@@ -3,6 +3,21 @@ require 'hanami/interactor'
 
 # Process API requests to create or modify acls
 # and to interrogate acls for permission
+#
+# API:
+#
+# create_acl=NAME&permission=EDIT|READ
+# remove_acl=NAME
+#
+# add_user=USER&acl=NAME
+# remove_user=USER&acl=NAME
+#
+# add_document=ID&acl=NAME
+# remove_document=ID&acl=NAME
+#
+# request_permissin&acl=NAME&dcument=ID&user=USER
+#
+#
 class ACLManager
 
   include Hanami::Interactor
