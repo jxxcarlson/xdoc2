@@ -171,6 +171,9 @@ class NSDocument
   # to the array "documents" of the hash
   # self.links
   def adopt_child(child)
+    # do not proceed if the child has already been adopted
+    return if self.child_ids.include? child.id
+
     # point the parent link of the child to the parent
     parent = self
     child.links['parent'] = parent.minimal_hash
