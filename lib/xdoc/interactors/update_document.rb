@@ -1,22 +1,37 @@
 require 'hanami/interactor'
 require_relative 'render_asciidoc'
+require_relative '../../xdoc/modules/aws'
 
+include AWS
 
 class UpdateDocument
   include Hanami::Interactor
 
   expose :updated_document, :hash,  :status
 
-  def initialize(params, query_string)
+  def initialize(params, query_string, options = {})
+    @options = options
+    @username = options[:username] || ''
     @params = params
     @document = DocumentRepository.find(@params['id'])
     @query_string = query_string || ''
   end
 
   def update
+    puts "*** UPDATE #{@document.title}"
     if @document
       @document.update_from_hash(@params)
-      result = ::RenderAsciidoc.new(source_text: @document.text).call
+      if @document.text =~ /include_latex_macros::default/ && @username != ''
+        puts "*** Using tex macros from S3 ..."
+        tex_macro_file_name = "#{@username}.tex"
+        tex_macros = AWS.get_string(tex_macro_file_name, folder='latex_macros')
+        if tex_macros
+          source_text = @document.text.sub('include_latex_macros::default[]', "\n++++\n\\(\n\n#{tex_macros}\n\\)\n++++\n")
+        end
+      else
+        source_text = @document.text
+      end
+      result = ::RenderAsciidoc.new(source_text: source_text).call
       @document.rendered_text = result.rendered_text
       # @document.links['images'] = result.image_map
       @updated_document = DocumentRepository.update @document

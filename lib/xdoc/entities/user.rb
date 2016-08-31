@@ -32,7 +32,7 @@ class User
   end
 
   def admissible_preferences
-    ['doc_format']
+    ['doc_format', 'tex_macro_file']
   end
 
   def admissible_values
@@ -41,7 +41,7 @@ class User
 
   def set_preference(key, value)
     return if admissible_preferences.include? key == false
-    return if !(admissible_values[key].include? value)
+    # return if !(admissible_values[key].include? value)
     dict || self.dict || {}
     preference_dict = dict['preferences'] || {}
     preference_dict[key] = value
