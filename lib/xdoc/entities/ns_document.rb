@@ -3,7 +3,7 @@ class NSDocument
 
   attributes :id, :identifier, :owner_id, :author_name, :collection_id, :title,
              :created_at, :updated_at, :viewed_at, :visit_count,
-             :text, :rendered_text, :public, :dict, :kind, :links, :tags
+             :text, :rendered_text, :public, :dict, :kind, :links, :tags, :backup_number
 
   def initialize(attributes = {})
     super
@@ -23,6 +23,7 @@ class NSDocument
   def set_links_from_json(array_name, str)
     @links[array_name] = JSON.parse(str)
   end
+
 
   def get_links(array_name)
     @links[array_name]
@@ -54,6 +55,7 @@ class NSDocument
     hash['dict'] = self.dict
     hash['links'] = self.links
     hash['tags'] = self.stringify_tags
+    hash['backup_number'] = self.backup_number
     hash
   end
 

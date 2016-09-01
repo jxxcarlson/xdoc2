@@ -68,6 +68,8 @@ Hanami::Model.configure do
       attribute :links, JSON
       attribute :kind, String
 
+      attribute :backup_number, Integer
+
     end
 
     collection :images do
