@@ -55,7 +55,6 @@ class NSDocument
     hash['dict'] = self.dict
     hash['links'] = self.links
     hash['tags'] = self.stringify_tags
-    hash['backup_number'] = self.backup_number
     hash
   end
 
@@ -403,6 +402,22 @@ class NSDocument
       self.dict['acl'] = my_acls
       DocumentRepository.update self
     end
+  end
+
+  def put_backup_info(number, date)
+    dict = self.dict || {}
+    dict['backup'] = {'number' => number, 'date' => date.to_s}
+    self.dict = dict
+    DocumentRepository.update self
+  end
+
+  def get_backup_info
+    dict = self.dict || {}
+    return dict['backup'] || {}
+  end
+
+  def get_backup_number
+    get_backup_info['number'] || 0
   end
 
 

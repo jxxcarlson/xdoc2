@@ -80,13 +80,14 @@ class BackupManager
   def put_backup
     document_id = @object
     @document = DocumentRepository.find document_id
-    @backup_number = (@document.backup_number || 0) + 1
+    @backup_number = @document.get_backup_number + 1
+    @backup_date = DateTime.now.to_s
     backup_string = @document.to_hash.to_json
     object_name = "#{@document.author_name}-#{@document.id}-backup-#{@backup_number}.json"
     AWS.put_string(backup_string, object_name, 'backups')
-    @document.backup_number = @backup_number
+    @document.put_backup_info(@backup_number, @backup_date)
     DocumentRepository.update @document
-    message = {id: @document.id, title: @document.title, backup_number: @backup_number, length: @document.text.length, timestamp: DateTime.now.to_s }.to_json
+    message = {id: @document.id, title: @document.title, backup_number: @backup_number, length: @document.text.length, timestamp: @backup_date }.to_json
     append_to_log(@document.author_name, message)
     @status = 'success'
   end
