@@ -6,8 +6,7 @@ module Api::Controllers::Documents
 
     def call(_params)
       result = BackupManager.new(request.query_string).call
-      puts "LOG:\n#{result.log}"
-      self.body = { status: result.status }.to_json
+      self.body = { status: result.status, report: result.report }.to_json
     end
   end
 end

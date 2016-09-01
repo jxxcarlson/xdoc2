@@ -7,17 +7,18 @@ include AWS
 #
 #  prepare_backups=USERNAME            :: set up log file USERNAME.log
 #  put_backup=ID                       :: make a backup of document with id = ID
-#  get_backup=latest
-
+#  read_log=USER&title=TITLE           ;: return log entries for user=USER and doc title like TITLE
+#
+#
 class BackupManager
 
   include Hanami::Interactor
 
-  expose :backup_number, :status, :log
+  expose :backup_number, :status, :log, :log_as_json, :report
 
   def initialize(command)
-    @commands = command.split('&').map{ |commmand| command.split('=') }
-    puts "Commands: #{@commands}"
+    @commands = command.split('&').map{ |command| command.split('=') }
+    @report = 'none'
     @status = 'error'
   end
 
@@ -40,6 +41,41 @@ class BackupManager
     object_name = "#{username}.log"
     AWS.put_string(@log, object_name, 'backups')
   end
+
+  def parse_log
+    log_lines= @log.split("\n")
+    log_lines.shift # discard title line
+    @log_as_json = log_lines.map{ |line| JSON.parse line}
+  end
+
+  def select_backups_for_title(title)
+    title = title.downcase
+    @log_as_json = @log_as_json.select{ |item| item['title'].downcase =~ /#{title}/}
+  end
+
+  def read_log
+    username = @object
+    get_log(username)
+    parse_log
+    _verb, title = @commands.shift
+    select_backups_for_title(title)
+    str = "-------------------------------------------------------------------------" << "\n"
+    str << "Report\n"
+    str << "-------------------------------------------------------------------------" << "\n"
+    str << "N\t ID\t TITLE\t\t LENGTH\t WHEN\n"
+    str << "-------------------------------------------------------------------------" << "\n"
+    @log_as_json.each do |item|
+      str << "#{item['backup_number']}\t #{item['id']}\t #{item['title']}\t #{item['length']}\t #{item['timestamp']}" << "\n"
+    end
+    str << "-------------------------------------------------------------------------" << "\n"
+    str << "Items: #{@log_as_json.count}" << "\n"
+    str << "-------------------------------------------------------------------------" << "\n"
+    @report = str
+    puts @report
+    @status = 'success'
+    @log_as_json.count
+  end
+
 
   def put_backup
     document_id = @object
@@ -64,6 +100,8 @@ class BackupManager
         prepare_backups
       when 'get_log'
         get_log(@object)
+      when 'read_log'
+        read_log
     end
   end
 
