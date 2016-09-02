@@ -61,6 +61,7 @@ class FindDocuments
 
   def public_documents
     @documents = DocumentRepository.find_public
+    @documents = @documents.all.select{ |doc| doc.parent_id == 0}
   end
 
   def user_search(username)
