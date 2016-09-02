@@ -8,13 +8,14 @@ include AWS
 #  prepare_backups=USERNAME            :: set up log file USERNAME.log
 #  put_backup=ID                       :: make a backup of document with id = ID
 #  read_log=USER&title=TITLE           ;: return log entries for user=USER and doc title like TITLE
+#  view=ID&number=N                    :: return string of source text for backup N of document with id=ID
 #
 #
 class BackupManager
 
   include Hanami::Interactor
 
-  expose :backup_number, :status, :log, :log_as_json, :report
+  expose :backup_number, :status, :log, :log_as_json, :report, :backup_text, :backup_date
 
   def initialize(command)
     @commands = command.split('&').map{ |command| command.split('=') }
@@ -51,6 +52,20 @@ class BackupManager
   def select_backups_for_title(title)
     title = title.downcase
     @log_as_json = @log_as_json.select{ |item| item['title'].downcase =~ /#{title}/}
+  end
+
+  def view
+    id=@object
+    document = DocumentRepository.find id
+    author_name  = document.author_name
+    _verb, @backup_number = @commands.shift
+    backup_name = "#{author_name}-#{id}-backup-#{@backup_number}.json"
+    puts "backup_name = #{backup_name}"
+    doc_as_json_string = AWS.get_string(backup_name, 'backups')
+    doc_as_json = JSON.parse doc_as_json_string
+    @backup_text = doc_as_json['text']
+    @backup_date = doc_as_json['updated_at']
+    @status = 'success'
   end
 
   def read_log
@@ -103,6 +118,8 @@ class BackupManager
         get_log(@object)
       when 'read_log'
         read_log
+      when 'view'
+        view
     end
   end
 

@@ -74,7 +74,7 @@ class NSDocument
      'identifier': self.identifier,
      'title': self.title,
      'kind': self.kind,
-     'tags': self.stringify_tags,
+     'kind': self.kind,
      'has_subdocuments': self.has_subdocuments,
      'url': "/documents/#{self.id}",
      'owner_id': self.owner_id,
@@ -86,7 +86,7 @@ class NSDocument
      'rendered_text': self.rendered_text,
      'links': self.links,
      'dict': self.dict,
-     'tags': self.tags
+     'tags': self.stringify_tags
     }
   end
 
