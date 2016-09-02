@@ -1,3 +1,5 @@
+post '/update_preferences/:id', to: 'users#updateprefences'
+get '/get_preferences/:id', to: 'users#getprefences'
 post '/backup', to: 'documents#backup'
 post '/acl', to: 'documents#acl'
 post '/images/:id', to: 'images#update'

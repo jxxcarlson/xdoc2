@@ -159,7 +159,6 @@ class NSDocument
 
     self.dict = hash['dict'] if hash['dict']
     self.links['documents'] = hash['links']['documents'] if hash['links'] && hash['links']['documents']
-    self.links['resources'] = hash['links']['resources'] if hash['links'] && hash['links']['resources']
     self.update_tags_from_string hash['tags'] if hash['tags']
     DocumentRepository.update self
   end
