@@ -70,7 +70,6 @@ class NSDocument
 
   ## document API:
   def hash
-  def hash
     {'id': self.id,
      'identifier': self.identifier,
      'title': self.title,
