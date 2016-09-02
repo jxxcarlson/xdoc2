@@ -10,7 +10,7 @@ class NSDocument
     @text ||= ''
     @rendered_text ||= ''
     @public ||= false
-    @dict  ||= {}
+    @dict ||= {}
     @kind ||= 'text'
     @links ||= {}
     @tags ||= []
@@ -68,72 +68,74 @@ class NSDocument
   end
 
 
-
   ## document API:
   def hash
-      { 'id': self.id,
-        'identifier': self.identifier,
-        'title': self.title,
-        'kind': self.kind,
-        'tags': self.stringify_tags,
-        'has_subdocuments': self.has_subdocuments,
-        'url': "/documents/#{self.id}",
-        'owner_id': self.owner_id,
-        'author': self.author_name,
-        'public': self.public,
-        'created_at': self.created_at,
-        'updated_at':  self.updated_at,
-        'text': self.text,
-        'rendered_text': self.rendered_text,
-        'links': self.links
-      }
+  def hash
+    {'id': self.id,
+     'identifier': self.identifier,
+     'title': self.title,
+     'kind': self.kind,
+     'tags': self.stringify_tags,
+     'has_subdocuments': self.has_subdocuments,
+     'url': "/documents/#{self.id}",
+     'owner_id': self.owner_id,
+     'author': self.author_name,
+     'public': self.public,
+     'created_at': self.created_at,
+     'updated_at': self.updated_at,
+     'text': self.text,
+     'rendered_text': self.rendered_text,
+     'links': self.links,
+     'dict': self.dict,
+     'tags': self.tags
+    }
   end
 
   # Does not include text and rendered text
   def short_hash
-    { 'id': self.id,
-      'identifier': self.identifier,
-      'title': self.title,
-      'has_subdocuments': self.has_subdocuments,
-      'url': "/documents/#{self.id}",
-      'owner_id': self.owner_id,
-      'author': self.author_name,
-      'public': self.public,
-      'created_at': self.created_at,
-      'updated_at':  self.updated_at,
-      'kind': self.kind,
-      'tags': self.stringify_tags,
-      'links': self.links
+    {'id': self.id,
+     'identifier': self.identifier,
+     'title': self.title,
+     'has_subdocuments': self.has_subdocuments,
+     'url': "/documents/#{self.id}",
+     'owner_id': self.owner_id,
+     'author': self.author_name,
+     'public': self.public,
+     'created_at': self.created_at,
+     'updated_at': self.updated_at,
+     'kind': self.kind,
+     'tags': self.stringify_tags,
+     'links': self.links
     }
   end
 
 
   def minimal_hash
-    { 'id': self.id,
-      'identifier': self.identifier,
-      'title': self.title,
-      'url': "/documents/#{self.id}",
-      'owner_id': self.owner_id,
-      'author': self.author_name,
-      'public': self.public,
+    {'id': self.id,
+     'identifier': self.identifier,
+     'title': self.title,
+     'url': "/documents/#{self.id}",
+     'owner_id': self.owner_id,
+     'author': self.author_name,
+     'public': self.public,
     }
   end
 
   # Like above, but a hack to solve the :id vs 'id' problem -- BAAD!
   def short_hash2
-    { 'id' => self.id,
-      'identifier' => self.identifier,
-      'title' => self.title,
-      'has_subdocuments' => self.has_subdocuments,
-      'url' => "/documents/#{self.id}",
-      'owner_id' => self.owner_id,
-      'author' => self.author_name,
-      'public' => self.public,
-      'created_at' => self.created_at,
-      'updated_at' =>  self.updated_at,
-      'kind' => self.kind,
-      'tags' => self.stringify_tags,
-      'links' => self.links
+    {'id' => self.id,
+     'identifier' => self.identifier,
+     'title' => self.title,
+     'has_subdocuments' => self.has_subdocuments,
+     'url' => "/documents/#{self.id}",
+     'owner_id' => self.owner_id,
+     'author' => self.author_name,
+     'public' => self.public,
+     'created_at' => self.created_at,
+     'updated_at' => self.updated_at,
+     'kind' => self.kind,
+     'tags' => self.stringify_tags,
+     'links' => self.links
     }
   end
 
@@ -160,7 +162,7 @@ class NSDocument
     self.links['documents'] = hash['links']['documents'] if hash['links'] && hash['links']['documents']
     self.links['resources'] = hash['links']['resources'] if hash['links'] && hash['links']['resources']
     self.update_tags_from_string hash['tags'] if hash['tags']
-    DocumentRepository.update  self
+    DocumentRepository.update self
   end
 
 
@@ -231,7 +233,7 @@ class NSDocument
     self.parent.remove_child(self) if self.parent
 
     # remove parent of chldren
-    children = self.subdocuments.map{ |subdoc| DocumentRepository.find subdoc[:id]}
+    children = self.subdocuments.map { |subdoc| DocumentRepository.find subdoc[:id] }
     children.each do |child|
       child.remove_parent
     end
@@ -251,11 +253,11 @@ class NSDocument
   end
 
   def child_names
-    self.subdocuments.map{ |x| x['title'] || x[:title]}
+    self.subdocuments.map { |x| x['title'] || x[:title] }
   end
 
   def child_ids
-    self.subdocuments.map{ |x| x['id'] || x[:id]}
+    self.subdocuments.map { |x| x['id'] || x[:id] }
   end
 
   def has_subdocuments
@@ -269,31 +271,29 @@ class NSDocument
       document.links['parent'] = self.minimal_hash
       DocumentRepository.update document
     end
-    self.subdocuments.map{ |sd| sd['id']}
+    self.subdocuments.map { |sd| sd['id'] }
   end
 
   def verify_parent_for_children
     self.subdocuments.each do |hash|
       document = DocumentRepository.find hash['id']
-      if document.links['parent']['id'] ==  self.id
+      if document.links['parent']['id'] == self.id
         puts "#{hash['id']} - #{hash['title']}: ok"
       else
         puts "#{hash['id']} - #{hash['title']}: FAIL"
       end
       DocumentRepository.update document
     end
-    self.subdocuments.map{ |sd| sd['id']}
+    self.subdocuments.map { |sd| sd['id'] }
   end
 
 
   ###########
 
 
-
-
   def update_document_links
     # first filter out bad data (and throw it away):
-    subdocs = self.subdocuments.select{ |x| x != nil}
+    subdocs = self.subdocuments.select { |x| x != nil }
     subdocs_new = []
     subdocs.each do |dochash|
       valid = true
@@ -341,9 +341,9 @@ class NSDocument
 
   def move_subdocument(from, to)
     subdocs = self.subdocuments
-    puts "before move: #{subdocs.map{|x| x['id']}}"
+    puts "before move: #{subdocs.map { |x| x['id'] }}"
     NSDocument.move(subdocs, from, to)
-    puts "after move: #{subdocs.map{|x| x['id']}}"
+    puts "after move: #{subdocs.map { |x| x['id'] }}"
     self.links['documents'] = subdocs
     DocumentRepository.update self
   end
@@ -351,7 +351,7 @@ class NSDocument
   def move_up(subdocument)
     k = index_of_subdocument(subdocument)
     if k > 0
-      self.move_subdocument(k,k-1)
+      self.move_subdocument(k, k-1)
     end
   end
 
@@ -360,7 +360,7 @@ class NSDocument
     k = index_of_subdocument(subdocument)
     last_index = self.subdocuments.count - 1
     if k < last_index
-      self.move_subdocument(k,k+1)
+      self.move_subdocument(k, k+1)
     end
   end
 
@@ -398,7 +398,7 @@ class NSDocument
     if !(my_acls.include? name)
       puts 'D'
       my_acls << name
-      self.dict  ||= {}
+      self.dict ||= {}
       self.dict['acl'] = my_acls
       DocumentRepository.update self
     end
@@ -419,9 +419,6 @@ class NSDocument
   def get_backup_number
     get_backup_info['number'] || 0
   end
-
-
-
 
 
 end
