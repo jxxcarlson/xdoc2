@@ -92,6 +92,10 @@ Hanami::Model.configure do
       attribute :dict, JSON
       attribute :tags, PGStringArray
 
+      attribute :bucket, String
+      attribute :path, String
+      attribute :file, String
+
     end
 
     collection :users do

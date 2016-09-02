@@ -74,7 +74,6 @@ class NSDocument
      'identifier': self.identifier,
      'title': self.title,
      'kind': self.kind,
-     'kind': self.kind,
      'has_subdocuments': self.has_subdocuments,
      'url': "/documents/#{self.id}",
      'owner_id': self.owner_id,
