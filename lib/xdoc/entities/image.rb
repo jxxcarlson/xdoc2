@@ -111,9 +111,23 @@ class Image
     new_url = "http://psurl.s3.amazonaws.com/#{target_object}"
 
     self.url = new_url
-    ImageRepository.update self
 
-    AWS.move_object(source_bucket, source_object, target_bucket, target_object, {public: 'yes'})
+
+    result =  AWS.move_object(source_bucket, source_object, target_bucket, target_object, {public: 'yes'})
+
+    ImageRepository.update self if result == true
+
+
+  end
+
+  def self.move_images
+    ImageRepository.all.each do |image|
+      if !(image.url =~ /\/jc\//) && !(image.url =~ /\/cavalieri\//)
+        puts
+        puts image.title
+        image.move
+      end
+    end
   end
 
 end

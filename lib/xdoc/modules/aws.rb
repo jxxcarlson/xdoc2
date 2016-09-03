@@ -75,7 +75,6 @@ module AWS
   #
   def copy_object(source_bucket, source_object, target_bucket, target_object, options={})
 
-    puts "options: #{options}"
 
     s3 = Aws::S3::Resource.new(
         credentials: Aws::Credentials.new(ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY']),
@@ -89,13 +88,9 @@ module AWS
 
     if options[:public] == 'yes'
 
-      puts "copying object as public"
-
       obj.copy_to(target, acl: 'public-read')
 
     else
-
-      puts "copying object as private"
 
       obj.copy_to(target)
 
@@ -107,8 +102,6 @@ module AWS
 
   def move_object(source_bucket, source_object, target_bucket, target_object, options={})
 
-    puts "options: #{options}"
-
     s3 = Aws::S3::Resource.new(
         credentials: Aws::Credentials.new(ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY']),
         region: 'us-west-1',
@@ -119,22 +112,20 @@ module AWS
 
     target = "#{target_bucket}/#{target_object}"
 
+    return false if (!obj.exists?)
+
 
     if options[:public] == 'yes'
-
-      puts "moving object as public"
 
       obj.move_to(target, acl: 'public-read')
 
     else
 
-      puts "moving object as private"
-
       obj.move_to(target)
 
     end
 
-
+    return true
   end
 
 end
