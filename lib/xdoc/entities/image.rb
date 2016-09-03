@@ -1,3 +1,11 @@
+
+
+require 'aws-sdk'
+require_relative '../../xdoc/modules/utility'
+
+include Utility
+include SecureRandom
+
 class Image
   include Hanami::Entity
 
@@ -11,6 +19,15 @@ class Image
   end
 
   def stringify_tags
+    tags = self.tags || []
+    if tags != []
+      self.tags.join(', ')[0..-2]
+    else
+      ''
+    end
+  end
+
+  def stringify_tags_old
     str = ''
     tags = self.tags
     if tags.count > 0
@@ -73,6 +90,30 @@ class Image
       url = "http://#{self.bucket}/#{path}/#{self.file}"
     end
     url
+  end
+
+  def move
+    source_bucket = 'psurl'
+    target_bucket = 'psurl'
+
+    source_object = self.file
+    insertion = "-#{SecureRandom.hex(2)}"
+    source_object2 = Utility.insert_into_string(source_object, insertion, '.')
+    puts "source_object2: #{source_object2}"
+
+    owner = UserRepository.find self.owner_id
+    target_path = "images/#{owner.username}"
+    target_object = "#{target_path}/#{source_object2}"
+
+    self.path = target_path
+    self.bucket = 'psurl'
+
+    new_url = "http://psurl.s3.amazonaws.com/#{target_object}"
+
+    self.url = new_url
+    ImageRepository.update self
+
+    AWS.move_object(source_bucket, source_object, target_bucket, target_object, {public: 'yes'})
   end
 
 end

@@ -15,8 +15,11 @@ module Api::Controllers::Images
                         title: params[:title],
                         content_type: params[:content_type],
                         owner_id: user.id,
+                        file: params[:filename],
                         source: params[:source])
       image = ImageRepository.create(image)
+
+      image.move
 
 
       if params[:attach]

@@ -69,4 +69,72 @@ module AWS
 
   end
 
+  # AWS.copy_object('psurl', 'monarch.jpg', 'psurl', 'images/jc/monarch.jpg')
+  #   =>
+  #   http://psurl.s3.amazonaws.com/images/jc/monarch.jpg
+  #
+  def copy_object(source_bucket, source_object, target_bucket, target_object, options={})
+
+    puts "options: #{options}"
+
+    s3 = Aws::S3::Resource.new(
+        credentials: Aws::Credentials.new(ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY']),
+        region: 'us-west-1',
+        endpoint: 'https://s3.amazonaws.com'
+    )
+
+    obj = s3.bucket(source_bucket).object(source_object)
+
+    target = "#{target_bucket}/#{target_object}"
+
+    if options[:public] == 'yes'
+
+      puts "copying object as public"
+
+      obj.copy_to(target, acl: 'public-read')
+
+    else
+
+      puts "copying object as private"
+
+      obj.copy_to(target)
+
+    end
+
+
+
+  end
+
+  def move_object(source_bucket, source_object, target_bucket, target_object, options={})
+
+    puts "options: #{options}"
+
+    s3 = Aws::S3::Resource.new(
+        credentials: Aws::Credentials.new(ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY']),
+        region: 'us-west-1',
+        endpoint: 'https://s3.amazonaws.com'
+    )
+
+    obj = s3.bucket(source_bucket).object(source_object)
+
+    target = "#{target_bucket}/#{target_object}"
+
+
+    if options[:public] == 'yes'
+
+      puts "moving object as public"
+
+      obj.move_to(target, acl: 'public-read')
+
+    else
+
+      puts "moving object as private"
+
+      obj.move_to(target)
+
+    end
+
+
+  end
+
 end
