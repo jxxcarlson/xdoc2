@@ -11,9 +11,11 @@ module Api::Controllers::Users
 
     def call(params)
       user = UserRepository.find_by_username params[:id]
-      preferences = user.dict['preferences']
+      dict = user.dict || {}
+      preferences = dict['preferences'] || {}
       preferences['doc_format'] = params['doc_format'] if( params['doc_format'] != nil && params['doc_format'] != '')
-      user.dict['preferences'] = preferences
+      dict['preferences'] = preferences
+      user.dict = dict
       UserRepository.update user
       self.body = {status: 'success', preferences: preferences}.to_json
     end

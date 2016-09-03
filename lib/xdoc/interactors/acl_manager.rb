@@ -15,7 +15,7 @@ require 'hanami/interactor'
 # add_document=ID&acl=NAME
 # remove_document=ID&acl=NAME
 #
-# request_permissin&acl=NAME&dcument=ID&user=USER
+# request_permissin&acl=NAME&document=ID&user=USER
 #
 #
 class ACLManager

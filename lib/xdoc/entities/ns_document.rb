@@ -417,5 +417,52 @@ class NSDocument
     get_backup_info['number'] || 0
   end
 
+  ##
+  ## Check document in/out
+  ##
+
+  def checked_out_to
+    dict = self.dict || {}
+    return dict['checked_out_to'] || ''
+  end
+
+  def check_out_to(username)
+    dict = self.dict || {}
+    dict['checked_out_to'] ||= ''
+    if dict['checked_out_to'] == ''
+      dict['checked_out_to'] = username
+      self.dict = dict
+      DocumentRepository.update self
+      return username
+    else
+      return 'error'
+    end
+  end
+
+  def check_in_by(username)
+    dict = self.dict || {}
+    if dict['checked_out_to'] == username
+      dict['checked_out_to'] = ''
+      self.dict = dict
+      DocumentRepository.update self
+      return 'checked_in'
+    else
+      return 'error'
+    end
+  end
+
+  def checkout_toggle(username)
+    status = self.checked_out_to
+    if status == ''
+      self.check_out_to(username)
+      return username
+    end
+    if status == username
+      self.check_in_by(username)
+      return 'checked_in'
+    end
+    return 'error'
+  end
+
 
 end

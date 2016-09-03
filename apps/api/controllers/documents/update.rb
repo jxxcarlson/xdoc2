@@ -19,7 +19,7 @@ module Api::Controllers::Documents
         if result.status == 'success'
           self.body = result.hash
         else
-          self.body = error_document_response('Sorry, something went wroing')
+          self.body = error_document_response('Sorry, something went wrong')
         end
       else
         self.body = error_document_response('Sorry, you do not have access to that document')
