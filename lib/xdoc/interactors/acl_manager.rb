@@ -17,12 +17,15 @@ require 'hanami/interactor'
 #
 # request_permissin&acl=NAME&document=ID&user=USER
 #
+# acls_of_owner=USER_ID
+# aclos_of_document=DOC_ID
+#
 #
 class ACLManager
 
   include Hanami::Interactor
 
-  expose :commands, :status
+  expose :commands, :status, :acl_list
 
   def initialize(command, owner_id)
     @commands = command.split('&').map{|command| command.split('=')} || []
@@ -46,10 +49,17 @@ class ACLManager
   end
 
   def add_user
+    username = @object
+    user = UserRepository.find_by_username username
+    if user == nil
+      @status = 'error'
+      return
+    end
     verb, name = @queue.shift
     if verb == 'acl'
       acl = AclRepository.find_by_name name
-      acl.add_member(@object)
+      acl.add_member(username)
+      user.join_acl name
       @status = 'success'
     else
       @status = 'error'
@@ -57,10 +67,17 @@ class ACLManager
   end
 
   def remove_user
+    username = @object
+    user = UserRepository.find_by_username username
+    if user == nil
+      @status = 'error'
+      return
+    end
     verb, name = @queue.shift
     if verb == 'acl'
       acl = AclRepository.find_by_name name
-      acl.remove_member(@object)
+      acl.remove_member(username)
+      user.leave_acl name
       @status = 'success'
     else
       @status = 'error'
@@ -68,10 +85,17 @@ class ACLManager
   end
 
   def add_document
+    document_id = @object
+    document = DocumentRepository.find document_id
+    if document == nil
+      @status = 'error'
+      return
+    end
     verb, name = @queue.shift
     if verb == 'acl'
       acl = AclRepository.find_by_name name
-      acl.add_document(@object)
+      acl.add_document(document_id)
+      document.join_acl name
       @status = 'success'
     else
       @status = 'error'
@@ -79,10 +103,18 @@ class ACLManager
   end
 
   def remove_document
+    document_id = @object
+    document = DocumentRepository.find document_id
+    if document == nil
+      @status = 'error'
+      return
+    end
     verb, name = @queue.shift
     if verb == 'acl'
       acl = AclRepository.find_by_name name
-      acl.remove_document(@object)
+      puts "*** removing document #{document_id} from acl #{name}"
+      acl.remove_document(document_id)
+      document.leave_acl name
       @status = 'success'
     else
       @status = 'error'
@@ -103,13 +135,54 @@ class ACLManager
     end
   end
 
+  # return list of acls owned by given user
+  def acls_of_owner
+    # normalize and handle error
+    if @object =~ /\A\d*\z/
+      owner_id = @object
+      owner = UserRepository.find @object
+      if owner == nil
+        @status = 'error'
+        return
+      end
+    else
+      owner = UserRepository.find_by_username @object
+      if owner == nil
+        @status = 'error'
+        return
+      end
+      owner_id = owner.id
+    end
+
+    # get acl list
+    result = []
+    AclRepository.find_by_owner_id(owner_id).all.each do |acl|
+      result <<  acl.to_h
+    end
+    puts "ACL LIST = #{result}"
+    @acl_list = result.to_json
+    @status = 'success'
+  end
+
+  # return list of acls to which the given document belongs
+  def acls_of_document
+    document_id = @object
+    document = DocumentRepository.find document_id
+    if document == nil
+      @status = 'error'
+      return
+    end
+    @acl_list = document.acls.to_json
+    @status = 'success'
+  end
+
   def call
 
     return if @queue == []
 
     @verb, @object = @queue.shift
 
-    return if !(['create_acl', 'remove_acl', 'add_user', 'remove_user', 'add_document', 'remove_document', 'request_permission'].include? @verb)
+    # return if !(['create_acl', 'remove_acl', 'add_user', 'remove_user', 'add_document', 'remove_document', 'request_permission', 'user_list'].include? @verb)
 
     send @verb
 

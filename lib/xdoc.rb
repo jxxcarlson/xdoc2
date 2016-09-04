@@ -127,7 +127,7 @@ Hanami::Model.configure do
       attribute :owner_id, Integer
       attribute :permission, String
       attribute :members, PGStringArray
-      attribute :documents, PGIntArray
+      attribute :documents, JSON
       attribute :created_at, DateTime
       attribute :updated_at, DateTime
 

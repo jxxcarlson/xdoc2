@@ -15,6 +15,10 @@ class Acl
     acl
   end
 
+  def json
+    self.to_h.to_json
+  end
+
   def self.remove(name)
     acl = AclRepository.find_by_name(name)
     if acl
@@ -52,24 +56,29 @@ class Acl
   ## Documents
   ##
 
-  def add_document(doc)
+  def add_document(doc_id)
     documents = self.documents || []
-    documents << doc
-    self.documents = documents
-    AclRepository.update self
+    doc = DocumentRepository.find doc_id
+    if doc && !(self.contains_document(doc_id))
+      documents << [doc_id, doc.title]
+      self.documents = documents
+      AclRepository.update self
+    end
+
   end
 
-  def index_of_document(doc)
-    self.documents.index(doc)
+  def index_of_document(doc_id)
+    self.documents.map{ |pair| pair[0].to_i }.index(doc_id)
   end
 
-  def contains_document(doc)
-    self.documents.index(doc) != nil
+  def contains_document(doc_id)
+    self.index_of_document(doc_id) != nil
   end
 
-  def remove_document(doc)
-    doc = doc.to_i
-    k = self.index_of_document(doc)
+  def remove_document(doc_id)
+    doc_id = doc_id.to_i
+    k = self.index_of_document(doc_id)
+    puts "*** acl, remove document, k = #{k}"
     if k
       documents = self.documents
       documents.delete_at k

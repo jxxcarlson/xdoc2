@@ -385,17 +385,28 @@ class NSDocument
 
   def join_acl(name)
     acl = AclRepository.find_by_name(name)
-    puts 'A'
     return if acl == nil
-    puts 'B'
     return if !(acl.contains_document(self.id))
-    puts 'C'
     dict = self.dict || {}
     my_acls = dict['acl'] || []
     if !(my_acls.include? name)
-      puts 'D'
       my_acls << name
       self.dict ||= {}
+      self.dict['acl'] = my_acls
+      DocumentRepository.update self
+    end
+  end
+
+  def leave_acl(name)
+    acl = AclRepository.find_by_name(name)
+    puts 'A'
+    return if acl == nil
+    puts 'B'
+    dict = self.dict || {}
+    my_acls = dict['acl'] || []
+    if my_acls.include? name
+      puts 'D'
+      my_acls.delete name
       self.dict['acl'] = my_acls
       DocumentRepository.update self
     end

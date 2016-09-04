@@ -6,4 +6,12 @@ class AclRepository
       where(name: name)
     end.first
   end
+
+  def self.find_by_owner_id(id)
+    query do
+      where(owner_id: id)
+    end
+  end
+
+
 end
