@@ -162,12 +162,13 @@ class ACLManager
     document = DocumentRepository.find document_id
     return if document == nil
 
-    _user, user_id = @queue.shift
+    _user, user_identifier = @queue.shift
     puts "-1. user_id = #{user_id}"
     # ensure that the user_id is the username
-    if !(user_id =~ /\A[A-Za-z]+\z/)
-      user = UserRepository.find_by_username user_id
-      user_id = user.username
+    if user_id =~ /\A[A-Za-z]+\z/
+      user = UserRepository.find_by_username user_identifier
+    else
+      user = UserRepository.find user_identifier
     end
 
     document_id = document_id.to_i
@@ -179,7 +180,7 @@ class ACLManager
       puts "1. get_permissions: #{@permissions}"
     end
 
-    if document.owner_id == user_id
+    if document.owner_id == user.id
       @permissions << 'edit'
       @permissions << 'read' if !(@permissions.include? 'read')
       puts "2. get_permissions: #{@permissions}"
@@ -200,7 +201,7 @@ class ACLManager
       puts "4d.   -- user_id:     #{user_id}"
       puts "4e.   -- contains do: #{acl.contains_document(document_id)}"
       puts "4f.   -- contains me: #{acl.contains_member(user_id)}"
-      if acl.contains_document(document_id) && acl.contains_member(user_id)
+      if acl.contains_document(document_id) && acl.contains_member(user.username)
         @permissions << acl.permission if !(@permissions.include? acl.permission)
         puts "5. get_permissions: #{@permissions}"
         break if @permissions.count == 2
