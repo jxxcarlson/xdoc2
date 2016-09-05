@@ -163,13 +163,15 @@ class ACLManager
     return if document == nil
 
     _user, user_identifier = @queue.shift
-    puts "-1. user_id = #{user.id}"
+
     # ensure that the user_id is the username
     if user_identifier =~ /\A[A-Za-z]+\z/
       user = UserRepository.find_by_username user_identifier
     else
       user = UserRepository.find user_identifier
     end
+
+    puts "-1. user_id = #{user.id}"
 
     document_id = document_id.to_i
     puts "0. permissions: doc owner = #{document.owner_id}, user_id = #{user.id}"
