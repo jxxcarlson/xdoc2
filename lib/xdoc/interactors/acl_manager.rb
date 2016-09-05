@@ -198,9 +198,9 @@ class ACLManager
       puts "4a.   -- documents:   #{acl.documents}"
       puts "4b.   -- members:     #{acl.members}"
       puts "4c.   -- document_id: #{document_id}"
-      puts "4d.   -- user_id:     #{user_id}"
+      puts "4d.   -- user_id:     #{user.id}"
       puts "4e.   -- contains do: #{acl.contains_document(document_id)}"
-      puts "4f.   -- contains me: #{acl.contains_member(user_id)}"
+      puts "4f.   -- contains me: #{acl.contains_member(user.id)}"
       if acl.contains_document(document_id) && acl.contains_member(user.username)
         @permissions << acl.permission if !(@permissions.include? acl.permission)
         puts "5. get_permissions: #{@permissions}"
