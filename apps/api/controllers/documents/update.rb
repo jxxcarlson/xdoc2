@@ -18,7 +18,6 @@ module Api::Controllers::Documents
       permissions = ACLManager.new(command, user.id).call.permissions
       can_edit = permissions.include? 'edit'
 
-      // if @access.valid && @access.username == params['author_name']
       if @access.valid && can_edit
         result = UpdateDocument.new(params, request.query_string, {username: @access.username}).call
         if result.status == 'success'

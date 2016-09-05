@@ -463,7 +463,9 @@ class NSDocument
   end
 
   def checkout_toggle(username)
+    puts "checkout_toggle, username = #{username}"
     status = self.checked_out_to
+    puts "checkout_toggle, status = #{status}"
     if status == ''
       self.check_out_to(username)
       return username
