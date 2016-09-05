@@ -11,7 +11,11 @@ module Api::Controllers::Documents
       self.body = { 'acl':request.query_string,
                     'status': result.status,
                     'commands': result.commands,
-                    'acl_list': result.acl_list
+                    'acl_list': result.acl_list,
+                    'permission': result.permission,
+                    'permission_granted': result.permission_granted,
+                    'permissions': result.permissions
+
       }.to_json
     end
 

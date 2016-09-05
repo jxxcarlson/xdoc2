@@ -9,7 +9,9 @@ module Api::Controllers::Documents
 
     def return_document(document)
       if document
-        hash = {'status' => 'success', 'document' => document.hash }
+        command = "get_permissions=#{document.id}&user=#{@user.username}"
+        permissions = ACLManager.new(command, @user.id).call.permissions
+        hash = {'status' => 'success', 'document' => document.hash, 'permissions': permissions }
         self.body = hash.to_json
       else
         self.body = { "error" => "500 Server error: document not found or processed" }.to_json
@@ -40,6 +42,7 @@ module Api::Controllers::Documents
 
       token = request.env["HTTP_ACCESSTOKEN"]
       @access = GrantAccess.new(token).call
+      @user = UserRepository.find_by_username @access.username
 
       document = get_document(params['id'])
 

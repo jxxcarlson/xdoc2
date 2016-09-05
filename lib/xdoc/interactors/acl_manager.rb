@@ -15,22 +15,25 @@ require 'hanami/interactor'
 # add_document=ID&acl=NAME
 # remove_document=ID&acl=NAME
 #
-# request_permissin&acl=NAME&document=ID&user=USER
+# get_permission=ACL_NAME&document=doc_ID&user=USER
+# get_permissions=doc_ID&user=USER
+# grant_permission=docID&user=USER&permission=PERMISSION
 #
 # acls_of_owner=USER_ID
-# aclos_of_document=DOC_ID
+# acls_of_document=DOC_ID
 #
 #
 class ACLManager
 
   include Hanami::Interactor
 
-  expose :commands, :status, :acl_list
+  expose :commands, :status, :acl_list, :permission, :permissions, :permission_granted
 
   def initialize(command, owner_id)
     @commands = command.split('&').map{|command| command.split('=')} || []
     @queue = @commands.dup
     @owner_id = owner_id
+    @permission_granted = false
     @status = 'error'
   end
 
@@ -121,18 +124,90 @@ class ACLManager
     end
   end
 
-  def request_permission
-    hash = {}
-    @queue.each do |key, value|
-      hash[key] = value
+  def get_permission
+    acl_name = @object
+    _document, document_id = @queue.shift
+    _user, user_id = @queue.shift
+    acl = AclRepository.find_by_name acl_name
+    if acl == nil
+      return
     end
-    acl = AclRepository.find_by_name hash['acl']
-    ok = acl.contains_document(hash['document'].to_i) && acl.contains_member(hash['user']) && @object == acl.permission
-    if ok
+    if acl.contains_document(document_id.to_i) && acl.contains_member(user_id)
+      @permission = acl.permission
       @status = 'success'
     else
       @status = 'error'
     end
+  end
+
+  def grant_permission
+    document_id = @object
+    document = DocumentRepository.find document_id
+    return if document == nil
+    _user, user_id = @queue.shift
+    _permission, permission = @queue.shift
+    document.acls.each do |acl_name|
+      acl = AclRepository.find_by_name acl_name
+      if acl.contains_document(document_id.to_i) && acl.contains_member(user_id) && acl.permission == permission
+        @permission_granted = true
+        @status = 'success'
+        break
+      end
+    end
+
+  end
+
+  def get_permissions
+    document_id = @object
+    document = DocumentRepository.find document_id
+    return if document == nil
+
+    _user, user_id = @queue.shift
+    puts "-1. user_id = #{user_id}"
+    # ensure that the user_id is the username
+    if !(user_id =~ /\A[A-Za-z]+\z/)
+      user = UserRepository.find_by_username user_id
+      user_id = user.username
+    end
+
+    document_id = document_id.to_i
+    puts "0. permissions: doc owner = #{document.owner_id}, user_id = #{user_id}"
+    @permissions = []
+
+    if document.public
+      @permissions << 'read'
+      puts "1. get_permissions: #{@permissions}"
+    end
+
+    if document.owner_id == user_id
+      @permissions << 'edit'
+      @permissions << 'read' if !(@permissions.include? 'read')
+      puts "2. get_permissions: #{@permissions}"
+    end
+
+    if @permissions.count == 2
+      puts "3. count is 2, bailing out with get_permissions: #{@permissions}"
+      @status = 'success'
+      return
+    end
+
+    document.acls.each do |acl_name|
+      acl = AclRepository.find_by_name acl_name
+      puts "4.  loop, acl = #{acl.name}, get_permissions: #{@permissions}"
+      puts "4a.   -- documents:   #{acl.documents}"
+      puts "4b.   -- members:     #{acl.members}"
+      puts "4c.   -- document_id: #{document_id}"
+      puts "4d.   -- user_id:     #{user_id}"
+      puts "4e.   -- contains do: #{acl.contains_document(document_id)}"
+      puts "4f.   -- contains me: #{acl.contains_member(user_id)}"
+      if acl.contains_document(document_id) && acl.contains_member(user_id)
+        @permissions << acl.permission if !(@permissions.include? acl.permission)
+        puts "5. get_permissions: #{@permissions}"
+        break if @permissions.count == 2
+      end
+      @status = 'success'
+    end
+
   end
 
   # return list of acls owned by given user
