@@ -18,8 +18,16 @@ module Api::Controllers::Documents
           permissions = []
         end
 
+        dict = document.dict || {}
+        can_show_source = dict['can_show_source'] || 'no'
+
         checked_out_to = CheckoutManager.new("status=#{document.id}").call.reply
-        hash = {'status' => 'success', 'document' => document.hash, 'permissions': permissions, 'checked_out_to': checked_out_to }
+        hash = {'status' => 'success',
+                'document' => document.hash,
+                'permissions': permissions,
+                'checked_out_to': checked_out_to,
+                'can_show_source': can_show_source
+        }
         self.body = hash.to_json
       else
         self.body = { "error" => "500 Server error: document not found or processed" }.to_json
