@@ -91,6 +91,7 @@ class NSDocument
 
   # Does not include text and rendered text
   def short_hash
+    dict = self.dict || {}
     {'id': self.id,
      'identifier': self.identifier,
      'title': self.title,
@@ -103,7 +104,8 @@ class NSDocument
      'updated_at': self.updated_at,
      'kind': self.kind,
      'tags': self.stringify_tags,
-     'links': self.links
+     'links': self.links,
+     'checked_out_to': dict['checked_out_to']
     }
   end
 
