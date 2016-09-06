@@ -33,14 +33,16 @@ class ACLManager
     @commands = command.split('&').map{|command| command.split('=')} || []
     @queue = @commands.dup
     @owner_id = owner_id
+    @owner = UserRepository.find @owner_id
     @permission_granted = false
     @status = 'error'
   end
 
   def create_acl
     verb, permission = @queue.shift
+    acl_name = "#{@owner.username}.#{@object}"
     if verb == 'permission'
-      Acl.create(name: @object, permission: permission, owner_id: @owner_id)
+      Acl.create(name: acl_name, permission: permission, owner_id: @owner_id)
       @status = 'success'
     else
       @status = 'error'
@@ -255,6 +257,8 @@ class ACLManager
   end
 
   def call
+
+    return if @owner == nil
 
     return if @queue == []
 

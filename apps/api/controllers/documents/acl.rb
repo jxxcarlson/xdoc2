@@ -6,8 +6,13 @@ module Api::Controllers::Documents
     include Api::Action
 
     def call(params)
+
+      token = request.env["HTTP_ACCESSTOKEN"]
+      @access = GrantAccess.new(token).call
+      @user = UserRepository.find_by_username @access.username
+
       puts request.query_string
-      result = ACLManager.new(request.query_string, 39).call
+      result = ACLManager.new(request.query_string, @user.id).call
       self.body = { 'acl':request.query_string,
                     'status': result.status,
                     'commands': result.commands,
