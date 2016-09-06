@@ -14,6 +14,8 @@ module Api::Controllers::Documents
           permissions = ACLManager.new(command, @user.id).call.permissions
         elsif document.public
           permissions = ['read']
+        else
+          permissions = []
         end
 
         checked_out_to = CheckoutManager.new("status=#{document.id}").call.reply
