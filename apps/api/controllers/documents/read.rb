@@ -9,8 +9,13 @@ module Api::Controllers::Documents
 
     def return_document(document)
       if document
-        command = "get_permissions=#{document.id}&user=#{@user.username}"
-        permissions = ACLManager.new(command, @user.id).call.permissions
+        if @user
+          command = "get_permissions=#{document.id}&user=#{@user.username}"
+          permissions = ACLManager.new(command, @user.id).call.permissions
+        elsif document.public
+          permissions = ['read']
+        end
+
         checked_out_to = CheckoutManager.new("status=#{document.id}").call.reply
         hash = {'status' => 'success', 'document' => document.hash, 'permissions': permissions, 'checked_out_to': checked_out_to }
         self.body = hash.to_json
