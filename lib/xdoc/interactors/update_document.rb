@@ -35,6 +35,12 @@ class UpdateDocument
       @document.rendered_text = result.rendered_text
       # @document.links['images'] = result.image_map
       @updated_document = DocumentRepository.update @document
+      puts "@document.title = #{@document.title}"
+      if @document.title == 'texmacros'
+        puts "update tex macro file"
+        object_name = "#{@username}.tex"
+        AWS.put_string(@document.text, object_name, 'latex_macros')
+      end
       @hash = {'status' => 'success', 'document' => @document.hash }.to_json
       @status = 'success'
     else
