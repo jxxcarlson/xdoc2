@@ -117,7 +117,7 @@ class NSDocument
      'url': "/documents/#{self.id}",
      'owner_id': self.owner_id,
      'author': self.author_name,
-     'public': self.public,
+     'public': self.public
     }
   end
 
