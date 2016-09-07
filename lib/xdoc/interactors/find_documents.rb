@@ -69,12 +69,12 @@ class FindDocuments
     user = UserRepository.find_by_username(username)
     @documents = DocumentRepository.find_by_owner(user.id)
     @documents.each do |doc|
-      puts "  -- DEBUT: #{doc.id}: #{doc.parent_id}, #{doc.title}"
+      puts "  -- DEBUG: #{doc.id}: #{doc.parent_id}, #{doc.title}"
     end
     puts "DEBUG: @documents.count, raw = #{@documents.count}"
     @documents = @documents.all.select{ |doc| doc.parent_id  == 0 && doc.author_name != 'system'}
     @documents.each do |doc|
-      puts "  -- DEBUT: #{doc.id}: #{doc.parent_id}, #{doc.title}"
+      puts "  -- DEBUG: #{doc.id}: #{doc.parent_id}, #{doc.title}"
     end
     puts "DEBUG: @documents.count, filtered = #{@documents.count}"
 
