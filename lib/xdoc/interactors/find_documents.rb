@@ -61,13 +61,13 @@ class FindDocuments
 
   def public_documents
     @documents = DocumentRepository.find_public
-    @documents = @documents.all.select{ |doc| doc.parent_id == 0 && doc.author_name != 'system'}
+    @documents = @documents.all.select{ |doc| doc.parent_id.to_i == 0 && doc.author_name != 'system'}
   end
 
   def user_search(username)
     user = UserRepository.find_by_username(username)
     @documents = DocumentRepository.find_by_owner(user.id)
-    @documents = @documents.all.select{ |doc| doc.parent_id == 0 && doc.author_name != 'system'}
+    @documents = @documents.all.select{ |doc| doc.parent_id.to_i  == 0 && doc.author_name != 'system'}
   end
 
   def scope_search(arg)
