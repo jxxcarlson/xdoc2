@@ -1,4 +1,5 @@
 require 'hanami/interactor'
+require_relative 'identifier'
 
 
 
@@ -33,6 +34,8 @@ class CreateDocument
     puts "*** Document #{document.title} created as #{document.kind}"
 
     @new_document = DocumentRepository.create document
+
+    Identifier.new(nil, @new_document).call
     puts "CreateDocument: created #{@new_document.title} (#{@new_document.id})"
     @status = 'success'
   end

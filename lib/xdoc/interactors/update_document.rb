@@ -1,6 +1,7 @@
 require 'hanami/interactor'
 require_relative 'render_asciidoc'
 require_relative '../../xdoc/modules/aws'
+require_relative 'identifier'
 
 include AWS
 
@@ -17,30 +18,44 @@ class UpdateDocument
     @query_string = query_string || ''
   end
 
+  def use_latex_macros
+    if @document.text =~ /include_latex_macros::default/ && @username != ''
+      puts "*** Using tex macros from S3 ..."
+      tex_macro_file_name = "#{@username}.tex"
+      tex_macros = AWS.get_string(tex_macro_file_name, folder='latex_macros')
+      if tex_macros
+        @source_text = @document.text.sub('include_latex_macros::default[]', "\n++++\n\\(\n\n#{tex_macros}\n\\)\n++++\n")
+      end
+    else
+      @source_text = @document.text
+    end
+  end
+
+  def update_latex_macros
+    if @document.title == 'texmacros'
+      puts "update tex macro file"
+      object_name = "#{@username}.tex"
+      AWS.put_string(@document.text, object_name, 'latex_macros')
+    end
+  end
+
+  def update_text
+    result = ::RenderAsciidoc.new(source_text: @source_text).call
+    @document.rendered_text = result.rendered_text
+    # @document.links['images'] = result.image_map
+    @updated_document = DocumentRepository.update @document
+  end
+
   def update
     puts "*** UPDATE #{@document.title}"
     if @document
+
       @document.update_from_hash(@params)
-      if @document.text =~ /include_latex_macros::default/ && @username != ''
-        puts "*** Using tex macros from S3 ..."
-        tex_macro_file_name = "#{@username}.tex"
-        tex_macros = AWS.get_string(tex_macro_file_name, folder='latex_macros')
-        if tex_macros
-          source_text = @document.text.sub('include_latex_macros::default[]', "\n++++\n\\(\n\n#{tex_macros}\n\\)\n++++\n")
-        end
-      else
-        source_text = @document.text
-      end
-      result = ::RenderAsciidoc.new(source_text: source_text).call
-      @document.rendered_text = result.rendered_text
-      # @document.links['images'] = result.image_map
-      @updated_document = DocumentRepository.update @document
-      puts "@document.title = #{@document.title}"
-      if @document.title == 'texmacros'
-        puts "update tex macro file"
-        object_name = "#{@username}.tex"
-        AWS.put_string(@document.text, object_name, 'latex_macros')
-      end
+
+      use_latex_macros
+      update_text
+      update_latex_macros
+
       @hash = {'status' => 'success', 'document' => @document.hash }.to_json
       @status = 'success'
     else

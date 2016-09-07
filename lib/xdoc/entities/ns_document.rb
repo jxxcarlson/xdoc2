@@ -144,7 +144,11 @@ class NSDocument
     puts "update_from_hash: #{hash.to_s}"
 
     self.title = hash['title'] if hash['title']
-    self.identifier = hash['identifier'] if hash['identifier']
+
+    if hash['identifier']
+      Identifier.new(hash['identifier'], self).call
+    end
+
     self.owner_id = hash['owner_id'] if hash['owner_id']
     self.collection_id = hash['collection_id'] if hash['collection_id']
 
