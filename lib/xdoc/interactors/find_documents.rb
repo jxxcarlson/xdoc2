@@ -61,13 +61,16 @@ class FindDocuments
 
   def public_documents
     @documents = DocumentRepository.find_public
-    @documents = @documents.all.select{ |doc| doc.parent_id.to_i == 0 && doc.author_name != 'system'}
+    @documents = @documents.all.select{ |doc| doc.parent_id == 0 && doc.author_name != 'system'}
   end
 
   def user_search(username)
+    puts "DEBUG: enter user search"
     user = UserRepository.find_by_username(username)
     @documents = DocumentRepository.find_by_owner(user.id)
-    @documents = @documents.all.select{ |doc| doc.parent_id.to_i  == 0 && doc.author_name != 'system'}
+    puts "DEBUG: @documents.count, raw = #{@documents.count}"
+    @documents = @documents.all.select{ |doc| doc.parent_id  == 0 && doc.author_name != 'system'}
+    puts "DEBUG: @documents.count, filtered = #{@documents.count}"
   end
 
   def scope_search(arg)
