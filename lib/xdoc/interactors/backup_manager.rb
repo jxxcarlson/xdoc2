@@ -8,6 +8,7 @@ include AWS
 #  prepare_backups=USERNAME            :: set up log file USERNAME.log
 #  put_backup=ID                       :: make a backup of document with id = ID
 #  read_log=USER&title=TITLE           ;: return log entries for user=USER and doc title like TITLE
+#  log_as_json=USER&title=TITLE        :: as above, but output is json
 #  view=ID&number=N                    :: return string of source text for backup N of document with id=ID
 #
 #
@@ -74,19 +75,24 @@ class BackupManager
     parse_log
     _verb, title = @commands.shift
     select_backups_for_title(title)
-    str = "-------------------------------------------------------------------------" << "\n"
-    str << "Report\n"
-    str << "-------------------------------------------------------------------------" << "\n"
-    str << "N\t ID\t TITLE\t\t LENGTH\t WHEN\n"
-    str << "-------------------------------------------------------------------------" << "\n"
+    str  = ""
     @log_as_json.each do |item|
       str << "#{item['backup_number']}\t #{item['id']}\t #{item['title']}\t #{item['length']}\t #{item['timestamp']}" << "\n"
     end
-    str << "-------------------------------------------------------------------------" << "\n"
+    str << "---------" << "\n"
     str << "Items: #{@log_as_json.count}" << "\n"
-    str << "-------------------------------------------------------------------------" << "\n"
     @report = str
     puts @report
+    @status = 'success'
+    @log_as_json.count
+  end
+
+  def log_as_json
+    username = @object
+    get_log(username)
+    parse_log
+    _verb, title = @commands.shift
+    select_backups_for_title(title)
     @status = 'success'
     @log_as_json.count
   end
@@ -109,18 +115,7 @@ class BackupManager
 
   def call
     @verb, @object = @commands.shift
-    case @verb
-      when 'put'
-        put_backup
-      when 'prepare_backups'
-        prepare_backups
-      when 'get_log'
-        get_log(@object)
-      when 'read_log'
-        read_log
-      when 'view'
-        view
-    end
+    send @verb
   end
 
 end

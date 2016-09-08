@@ -10,7 +10,8 @@ module Api::Controllers::Documents
                     backup_number: result.backup_number,
                     backup_date: result.backup_date,
                     report: result.report,
-                    backup_text: result.backup_text
+                    backup_text: result.backup_text,
+                    log_as_json: result.log_as_json
       }.to_json
     end
   end

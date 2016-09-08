@@ -219,6 +219,7 @@ class FindDocuments
 
   def filter_documents
     set_id_array
+    puts "@documents: #{@documents}"
     if @documents.class.name == 'Array'
       @documents = @documents.select{ |doc| @id_array.include?(doc.id) }
     else
@@ -243,7 +244,7 @@ class FindDocuments
   end
 
   def handle_empty_search_result
-    if @documents == []
+    if @documents == [] || @documents == [nil]
       default_document = DocumentRepository.find(ENV['DEFAULT_DOCUMENT_ID'])
       @documents = [default_document]
       @document_hash_array = @documents.map { |document| document.short_hash }
@@ -267,8 +268,8 @@ class FindDocuments
     search(query)
     filter_hash_array
     trim_random_sample
-    filter_documents
     handle_empty_search_result
+    filter_documents
     get_first_document
     @document_count = @documents.count
   end
