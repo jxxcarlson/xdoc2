@@ -55,6 +55,10 @@ class BackupManager
     @log_as_json = @log_as_json.select{ |item| item['title'].downcase =~ /#{title}/}
   end
 
+  def select_backups_for_id(id)
+    @log_as_json = @log_as_json.select{ |item| item['id'] == id}
+  end
+
   def view
     id=@object
     document = DocumentRepository.find id
@@ -91,8 +95,18 @@ class BackupManager
     username = @object
     get_log(username)
     parse_log
-    _verb, title = @commands.shift
-    select_backups_for_title(title)
+    _verb, identifier = @commands.shift
+    if identifier =~ /\A[0-9]*\z/
+      id = identifier
+      puts "BRANCH A, id = #{id}"
+      select_backups_for_id(id.to_i)
+    else
+      puts "BRANCH B"
+      title = identifier
+      select_backups_for_title(title)
+
+    end
+
     @status = 'success'
     @log_as_json.count
   end
