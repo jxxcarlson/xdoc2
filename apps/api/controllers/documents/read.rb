@@ -35,7 +35,7 @@ module Api::Controllers::Documents
     end
 
     def  get_document(id)
-      puts "DEBUG: API read, get_document, username = #{@access.username}"
+      puts "DEBUG: API read, get_document, username = #{@access.username}" if @access
       puts "DEBUG: API read, get_document, id = #{id}"
       if id =~ /\A[1-9][0-9]*\z/
         document = DocumentRepository.find(id)
