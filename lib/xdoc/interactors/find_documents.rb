@@ -73,9 +73,9 @@ class FindDocuments
     end
     puts "DEBUG: @documents.count, raw = #{@documents.count}"
     @documents = @documents.all.select{ |doc| doc.parent_id  == 0 && doc.author_name != 'system'}
-    @documents.each do |doc|
-      puts "  -- DEBUG: #{doc.id}: #{doc.parent_id}, #{doc.title}"
-    end
+    # @documents.each do |doc|
+    #  puts "  -- DEBUG: #{doc.id}: #{doc.parent_id}, #{doc.title}"
+    # end
     puts "DEBUG: @documents.count, filtered = #{@documents.count}"
 
   end
@@ -219,7 +219,7 @@ class FindDocuments
 
   def filter_documents
     set_id_array
-    puts "@documents: #{@documents}"
+    # puts "@documents: #{@documents}"
     if @documents.class.name == 'Array'
       @documents = @documents.select{ |doc| @id_array.include?(doc.id) }
     else
