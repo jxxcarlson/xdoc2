@@ -67,6 +67,9 @@ class FindDocuments
   def user_search(username)
     puts "DEBUG: enter user search"
     user = UserRepository.find_by_username(username)
+    if user == nil
+      return [ ]
+    end
     @documents = DocumentRepository.find_by_owner(user.id)
     @documents.each do |doc|
       puts "  -- DEBUG: #{doc.id}: #{doc.parent_id}, #{doc.title}"
