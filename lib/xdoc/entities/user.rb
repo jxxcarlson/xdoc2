@@ -15,6 +15,13 @@ class User
     self.admin ||= false
   end
 
+  def hash
+    return {'id' => self.id,
+            'name' => self.username,
+            'email' => self.email
+            }
+  end
+
   def change_password(new_password)
     self.password_hash = BCrypt::Password.create(new_password)
     # UserRepository.update self

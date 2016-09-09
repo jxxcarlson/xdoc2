@@ -1,3 +1,4 @@
+post'/manage_users', to: 'users#manage'
 
 post '/checkout', to: 'documents#checkout'
 post '/update_preferences/:id', to: 'users#updateprefences'
