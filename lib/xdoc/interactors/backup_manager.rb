@@ -98,7 +98,7 @@ class BackupManager
   end
 
 
-  def put_backup
+  def put
     document_id = @object
     @document = DocumentRepository.find document_id
     @backup_number = @document.get_backup_number + 1
