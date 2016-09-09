@@ -57,10 +57,22 @@ module Api::Controllers::Documents
     end
 
     def call(params)
+      puts "DEBUG: Enter API controller read with id = #{params['id']}"
+      access_granted = false
 
       token = request.env["HTTP_ACCESSTOKEN"]
-      @access = GrantAccess.new(token).call
-      @user = UserRepository.find_by_username @access.username
+      if token
+        puts "DEBUG:   -- token PRESENT"
+        @access = GrantAccess.new(token).call
+        @user = UserRepository.find_by_username @access.username
+        if  @user
+          puts "DEBUG:  -- user = #@user.username"
+        end
+        access_granted = @access.valid
+      else
+        puts "DEBUG:   -- token NOT present"
+      end
+
 
       document = get_document(params['id'])
 
@@ -68,12 +80,12 @@ module Api::Controllers::Documents
         puts "Can't find document for id = #{params['id']}"
       end
 
-      if @access.valid
+      if access_granted
         return_document(document)
       elsif document.public
         return_document(document)
       else
-        self.body = error_document_response
+        self.body = {'status': 'error'}
       end
 
     end
