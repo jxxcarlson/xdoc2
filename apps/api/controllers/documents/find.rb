@@ -21,7 +21,11 @@ module Api::Controllers::Documents
       token = request.env["HTTP_ACCESSTOKEN"]
       @access = GrantAccess.new(token).call
 
-      search_result = FindDocuments.new(request.query_string, @access).call
+      if request.query_string =~ /deleted=/
+        search_result = DeletedDocuments.new(request.query_string, @access).call
+      else
+        search_result = FindDocuments.new(request.query_string, @access).call
+      end
 
       result  = { :status => 'success',
                     :document_count => search_result.document_count,
