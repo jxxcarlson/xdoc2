@@ -29,8 +29,8 @@ module Api::Controllers::Documents
                     :first_document => search_result.first_document.hash
                   }.to_json
 
-      result2 = JSON.parse(result)
-      puts "\n\nfirst_document::: #{result2['first_document']['title']}\n\n"
+      # result2 = JSON.parse(result)
+      # puts "\n\nfirst_document::: #{result2['first_document']['title']}\n\n"
 
       self.body = result
     end

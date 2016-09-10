@@ -177,6 +177,10 @@ class FindDocuments
     lambda{ |dochash| dochash[:title].downcase =~ /#{arg}/ }
   end
 
+  def not_deleted_filter
+    lambda{ |dochash| dochash[:status] != 'deleted' }
+  end
+
   def user_id(key)
     if key =~ /[0-9].*/
       key
@@ -214,6 +218,7 @@ class FindDocuments
     @queries.each do |query|
       @document_hash_array = apply_filter(query, @document_hash_array)
     end
+    @document_hash_array = @document_hash_array.select(&not_deleted_filter)
   end
 
   def set_id_array

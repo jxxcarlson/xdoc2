@@ -105,7 +105,8 @@ class NSDocument
      'kind': self.kind,
      'tags': self.stringify_tags,
      'links': self.links,
-     'checked_out_to': dict['checked_out_to']
+     'checked_out_to': dict['checked_out_to'],
+     'status': dict['status']
     }
   end
 
@@ -481,6 +482,19 @@ class NSDocument
       return 'checked_in'
     end
     return 'error'
+  end
+
+  # status values: 'deleted'
+  def status
+    dict = self.dict || {}
+    dict['status']
+  end
+
+  def set_status(value)
+    dict = self.dict || {}
+    dict['status'] = value
+    self.dict = dict
+    DocumentRepository.update self
   end
 
 

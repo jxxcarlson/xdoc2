@@ -4,7 +4,7 @@ module Api::Controllers::Documents
 
     def call(params)
       result = CheckoutManager.new(request.query_string).call
-      self.body = {query: request.query_string, reply: result.reply }.to_json
+      self.body = {status: 'success', query: request.query_string, reply: result.reply }.to_json
     end
   end
 end

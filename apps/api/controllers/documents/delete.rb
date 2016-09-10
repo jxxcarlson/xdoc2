@@ -12,7 +12,8 @@ module Api::Controllers::Documents
       document = DocumentRepository.find(id)
 
       if document && document.owner_id == @access.user_id
-        NSDocument.delete document
+        document.set_status('deleted')
+        # NSDocument.delete document
         puts "Document #{id} deleted"
         reply =  { 'status': 'success','info': "document{#id} deleted" }
       else
