@@ -25,6 +25,8 @@ class RenderAsciidoc
       old_ref = "xref::#{id}[#{label}]"
       # new_ref = "http://jxxmbp.local:3000/documents/#{id}[#{label}]"
       new_ref = "#{ENV['HOST']}/documents/#{id}[#{label}]"
+      puts "old_ref: #{old_ref}"
+      puts "new_ref: #{new_ref}"
       @source_text = @source_text.sub(old_ref, new_ref)
     end
   end

@@ -144,7 +144,7 @@ class UpdateDocument
     case @query_string
       when ''
         update
-      when /move/nnnnnnnnnnn
+      when /move/
         move_subdocument
       when /attach/
         attach_document
