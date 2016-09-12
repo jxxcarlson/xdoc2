@@ -352,6 +352,16 @@ class NSDocument
     DocumentRepository.update self
   end
 
+  def move_last_subdocument(to)
+    subdocs = self.subdocuments
+    n = subdocs.count - 1
+    puts "before move: #{subdocs.map { |x| x['id'] }}"
+    NSDocument.move(subdocs, n, to)
+    puts "after move: #{subdocs.map { |x| x['id'] }}"
+    self.links['documents'] = subdocs
+    DocumentRepository.update self
+  end
+
   def move_up(subdocument)
     k = index_of_subdocument(subdocument)
     if k > 0

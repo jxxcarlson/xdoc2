@@ -35,6 +35,8 @@ class CreateDocument
 
     @new_document = DocumentRepository.create document
 
+
+
     Identifier.new(nil, @new_document).call
     puts "CreateDocument: created #{@new_document.title} (#{@new_document.id})"
     @status = 'success'
@@ -82,7 +84,7 @@ class CreateDocument
         puts "\nCreateDocument: attached #{@new_document.title} to #{@parent_document.title}\n"
         target_index = @parent_document.index_of_subdocument current_document
         target_index += 1 if @options['position'] == 'below'
-        @parent_document.move_subdocument(last_index, target_index)
+        @parent_document.move_last_subdocument(target_index)
         puts "\nCreateDocument: move #{@new_document.title} to index #{target_index} of #{@parent_document.title}\n"
 
         DocumentRepository.update @parent_document
