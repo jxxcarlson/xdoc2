@@ -15,7 +15,7 @@ class HotListManager
     @command = command
     dict = @user.dict || {}
     @hotlist = dict['hotlist'] || []
-    @ha = HashArray.new(@hotlist, 7)
+    @ha = HashArray.new(@hotlist, 12)
   end
 
   def push
