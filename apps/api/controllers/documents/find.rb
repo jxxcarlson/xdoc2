@@ -23,15 +23,19 @@ module Api::Controllers::Documents
 
       if request.query_string =~ /deleted=/
         search_result = DeletedDocuments.new(request.query_string, @access).call
+        result  = { :status => 'success',
+                    :document_count => search_result.document_hash_array.count,
+                    :documents => search_result.document_hash_array,
+        }.to_json
       else
         search_result = FindDocuments.new(request.query_string, @access).call
-      end
-
-      result  = { :status => 'success',
+        result  = { :status => 'success',
                     :document_count => search_result.document_count,
                     :documents => search_result.document_hash_array,
                     :first_document => search_result.first_document.hash
-                  }.to_json
+        }.to_json
+      end
+
 
       # result2 = JSON.parse(result)
       # puts "\n\nfirst_document::: #{result2['first_document']['title']}\n\n"
