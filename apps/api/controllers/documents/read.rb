@@ -68,7 +68,6 @@ module Api::Controllers::Documents
         puts "DEBUG:   -- token NOT present"
       end
 
-
       document = get_document(params['id'])
 
       if document == nil
@@ -76,6 +75,8 @@ module Api::Controllers::Documents
       end
 
       if access_granted
+        hotlist = HotListManager.new(@user, 'push', document).call.hotlist
+        puts "HOTLIST: #{hotlist}"
         return_document(document)
       elsif document.public
         return_document(document)

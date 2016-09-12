@@ -1,3 +1,4 @@
+get '/hotlist/:username', to: 'users#hotlist'
 post'/manage_users', to: 'users#manage'
 
 post '/checkout', to: 'documents#checkout'

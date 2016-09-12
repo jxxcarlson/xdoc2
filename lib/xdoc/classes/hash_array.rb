@@ -9,8 +9,17 @@ module XDoc
   #   oc = OrderedHashCollection.new(list)
   class HashArray
 
-    def initialize(items = [])
+    def initialize(items = [], capacity = 1000 )
       @items = items
+      @capacity = capacity
+    end
+
+    def set_capacity(capacity)
+      @capacity = capacity
+    end
+
+    def capacity
+      @capacity
     end
 
     def items
@@ -29,12 +38,30 @@ module XDoc
       @items[k]
     end
 
+    def first
+      @items[0]
+    end
+
+    def last
+      n = @items.count - 1
+      @items[n]
+    end
+
     def []= (k,value) # setter
       @items[k] = value
     end
 
     def push(item)
+      if @items.count >= @capacity
+        @items.shift
+      end
       @items.push(item)
+    end
+
+    def push_unique(item, attr)
+      if !(self.attribute_list(attr).include? item[attr])
+        self.push(item)
+      end
     end
 
     def pop
@@ -46,11 +73,23 @@ module XDoc
     end
 
     def unshift(item)
-      @items.unshift(item)
+      @items.unshift(item)  if @items.count < @capacity
+    end
+
+    def unshift_unique(item, attr)
+      if !(self.attribute_list(attr).include? item[attr])
+        @items.unshift(item)  if @items.count < @capacity
+      end
     end
 
     def insert(k, item)
-      @items.insert(k, item)
+      @items.insert(k, item)  if @items.count < @capacity
+    end
+
+    def insert_unique(k, item, attr)
+      if !(self.attribute_list(attr).include? item[attr])
+        @items.insert(k, item)  if @items.count < @capacity
+      end
     end
 
     def delete_at(k)
@@ -101,6 +140,11 @@ module XDoc
     # e.g., [ { 'id': 10, 'title': 'EM'}, { 'id': 20, 'title': 'Bio'}]
     def attribute_list(attr)
       @items.map { |x| x[attr] }
+    end
+
+    # get attr => value for @items[k]
+    def self.attribute(attr, item)
+      item[attr]
     end
 
     # set attr => value for @items[k]
