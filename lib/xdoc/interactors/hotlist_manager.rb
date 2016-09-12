@@ -19,7 +19,9 @@ class HotListManager
   end
 
   def push
-    @ha.push_unique @document.short_hash, 'id'
+    hash = { 'id' => @document.id, 'title' => @document.title}
+    # @ha.push_unique @document.short_hash, 'id'
+    @ha.push_unique hash, 'id'
     @hotlist = @ha.items
     dict = @user.dict || {}
     dict['hotlist'] = @hotlist
