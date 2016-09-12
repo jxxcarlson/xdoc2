@@ -14,7 +14,7 @@ module Api::Controllers::Users
       user = UserRepository.find_by_username username
       return if user == nil
       hotlist = HotListManager.new(user, 'get').call.hotlist || []
-      reply = { 'status' => 'success', 'hotlist' => hotlist}
+      reply = { 'status' => 'success', 'hotlist' => hotlist.reverse }
       self.body = reply.to_json
     end
 
