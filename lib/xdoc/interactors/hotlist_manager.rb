@@ -22,7 +22,8 @@ class HotListManager
     hash = { 'id' => @document.id,
              'title' => @document.title,
              'author'=> @document.author_name,
-             'url' => "documents/#{@document.id}?toc"
+             'url' => "documents/#{@document.id}?toc",
+             'has_subdocuments' => @document.has_subdocuments
     }
     # @ha.push_unique @document.short_hash, 'id'
     @ha.push_unique hash, 'id'
