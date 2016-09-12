@@ -57,17 +57,12 @@ module Api::Controllers::Documents
     end
 
     def call(params)
-      puts "DEBUG: Enter API controller read with id = #{params['id']}"
       access_granted = false
 
       token = request.env["HTTP_ACCESSTOKEN"]
       if token
-        puts "DEBUG:   -- token PRESENT"
         @access = GrantAccess.new(token).call
         @user = UserRepository.find_by_username @access.username
-        if  @user
-          puts "DEBUG:  -- user = #@user.username"
-        end
         access_granted = @access.valid
       else
         puts "DEBUG:   -- token NOT present"
