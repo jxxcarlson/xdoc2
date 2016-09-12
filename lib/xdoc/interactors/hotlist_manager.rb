@@ -19,7 +19,7 @@ class HotListManager
   end
 
   def push
-    hash = { 'id' => @document.id, 'title' => @document.title}
+    hash = { 'id' => @document.id, 'title' => @document.title, 'author'=> @document.author_name }
     # @ha.push_unique @document.short_hash, 'id'
     @ha.push_unique hash, 'id'
     @hotlist = @ha.items
