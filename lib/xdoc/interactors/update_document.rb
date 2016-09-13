@@ -19,9 +19,9 @@ class UpdateDocument
   end
 
   def use_latex_macros
-    if @document.text =~ /include_latex_macros::default/ && @username != ''
+    if @document.text =~ /include_latex_macros::default/
       puts "*** Using tex macros from S3 ..."
-      tex_macro_file_name = "#{@username}.tex"
+      tex_macro_file_name = "#{@document.author_name}.tex"
       tex_macros = AWS.get_string(tex_macro_file_name, folder='latex_macros')
       if tex_macros
         @source_text = @document.text.sub('include_latex_macros::default[]', "\n++++\n\\(\n\n#{tex_macros}\n\\)\n++++\n")

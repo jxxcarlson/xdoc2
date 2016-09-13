@@ -1,3 +1,4 @@
+get '/useracl/:username', to: 'users#acl'
 get '/hotlist/:username', to: 'users#hotlist'
 post'/manage_users', to: 'users#manage'
 
