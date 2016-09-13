@@ -31,5 +31,57 @@ describe HashArray do
     assert oc.attribute_list('note') == ['OK', nil]
   end
 
+  it 'can do a push_promote t4' do
+    list = [ { 'id' => 10, 'title' => 'EM'}, { 'id' => 20, 'title' => 'Bio'}]
+    oc = HashArray.new(list, 3)
+    puts "ITEMS: #{oc.items}"
+
+    item = {'id' => 66, 'title' => 'Magick'}
+    oc.push_promote item, 'id'
+    puts "ITEMS: #{oc.items}"
+
+    item = {'id' => 20, 'title' => 'Bio'}
+    oc.push_promote item, 'id'
+    puts "ITEMS: #{oc.items}"
+
+    item = {'id' => 20, 'title' => 'Bio'}
+    oc.push_promote item, 'id'
+    puts "ITEMS: #{oc.items}"
+
+    item = {'id' => 20, 'title' => 'Bio'}
+    oc.push_promote item, 'id'
+    puts "ITEMS: #{oc.items}"
+
+    item = {'id' => 20, 'title' => 'Bio'}
+    oc.push_promote item, 'id'
+    puts "ITEMS: #{oc.items}"
+
+    item =  { 'id' => 10, 'title' => 'EM'}
+    oc.push_promote item, 'id'
+    puts "ITEMS: #{oc.items}"
+
+    item =  { 'id' => 101, 'title' => 'foo'}
+    oc.push_promote item, 'id'
+    puts "ITEMS: #{oc.items}"
+
+    item =  { 'id' => 102, 'title' => 'bar'}
+    oc.push_promote item, 'id'
+    puts "ITEMS: #{oc.items}"
+
+    item =  { 'id' => 103, 'title' => 'baz'}
+    oc.push_promote item, 'id'
+    puts "ITEMS: #{oc.items}"
+
+    item =  { 'id' => 103, 'title' => 'foo'}
+    oc.push_promote item, 'id'
+    puts "ITEMS: #{oc.items}"
+
+    item =  { 'id' => 103, 'title' => 'blatzo'}
+    oc.push_promote item, 'id'
+    puts "ITEMS: #{oc.items}"
+
+
+  end
+
 
 end

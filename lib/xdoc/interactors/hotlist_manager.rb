@@ -15,7 +15,7 @@ class HotListManager
     @command = command
     dict = @user.dict || {}
     @hotlist = dict['hotlist'] || []
-    @ha = HashArray.new(@hotlist, 12)
+    @ha = HashArray.new(@hotlist, 5)
   end
 
   def push
@@ -26,12 +26,14 @@ class HotListManager
              'has_subdocuments' => @document.has_subdocuments
     }
     # @ha.push_unique @document.short_hash, 'id'
-    @ha.push_unique hash, 'id'
-    @hotlist = @ha.items
-    dict = @user.dict || {}
-    dict['hotlist'] = @hotlist
-    @user.dict = dict
-    UserRepository.update @user
+    if hash != nil
+      @ha.push_promote hash, 'id'
+      @hotlist = @ha.items
+      dict = @user.dict || {}
+      dict['hotlist'] = @hotlist
+      @user.dict = dict
+      UserRepository.update @user
+    end
   end
 
   def get

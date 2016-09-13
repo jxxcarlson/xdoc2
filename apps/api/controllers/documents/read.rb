@@ -74,7 +74,7 @@ module Api::Controllers::Documents
         puts "Can't find document for id = #{params['id']}"
       end
 
-      if access_granted
+      if access_granted && document != nil
         hotlist = HotListManager.new(@user, 'push', document).call.hotlist
         puts "HOTLIST: #{hotlist}"
         return_document(document)

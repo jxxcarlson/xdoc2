@@ -53,9 +53,22 @@ module XDoc
 
     def push(item)
       if @items.count >= @capacity
+        puts 'SHIFT'
         @items.shift
       end
+      puts 'PUSH'
       @items.push(item)
+    end
+
+    def push_promote(item, attr)
+      k = self.attribute_list(attr).index(item[attr])
+      puts "push_unique: #{k}"
+      if k == nil
+        self.push(item)
+      else
+        self.swap(k,k+1) if k + 1 < @capacity
+      end
+      return k
     end
 
     def push_unique(item, attr)
@@ -139,6 +152,7 @@ module XDoc
     # assuming that @items is an array of hashes,
     # e.g., [ { 'id': 10, 'title': 'EM'}, { 'id': 20, 'title': 'Bio'}]
     def attribute_list(attr)
+      @items = @items.select{ |x| x != nil}
       @items.map { |x| x[attr] }
     end
 
