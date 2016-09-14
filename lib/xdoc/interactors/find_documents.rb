@@ -123,7 +123,7 @@ class FindDocuments
 
   def random_search(percentage)
     n = ENV['DEFAULT_DOCUMENT_ID']
-    @documents = DocumentRepository.random_sample(percentage).select{ |doc| doc.id != n}[0..50]
+    @documents = DocumentRepository.random_sample(percentage).select{ |doc| doc.id != n && doc.public }[0..50]
   end
   def search(query)
     @command, arg = query

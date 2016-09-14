@@ -21,9 +21,10 @@ class Identifier
       @trial_identifier  = @document.title
     end
 
-    # Restrict identifier to user's name space
+    # Restrict identifier to user's name space: first, remove it
+    # if it is there to avoid duplicaton, then prefix username
     @identifier = @trial_identifier.gsub(/\A#{@document.author_name}\./, '')
-    @identifier = "#{@document.author_name}.#{@trial_identifier}".downcase.gsub(' ', '_')
+    @identifier = "#{@document.author_name}.#{@identifier}".downcase.gsub(' ', '_')
 
     # Ensure that the identifier is unique by adding a short hash if necessary
     _document = DocumentRepository.find_by_identifier @trial_identifier
