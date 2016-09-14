@@ -30,7 +30,7 @@ module Api::Controllers::Documents
         }
         self.body = hash.to_json
       else
-        self.body = { "error" => "500 Server error: document not found or processed" }.to_json
+        self.body = { 'status' => 'success', 'error' => 'Error: document not found or processed' }.to_json
       end
     end
 
@@ -81,7 +81,7 @@ module Api::Controllers::Documents
       elsif document.public
         return_document(document)
       else
-        self.body = {'status': 'error'}
+        self.body = {'status' => 'success', 'error' => 'access not granted'}.to_json
       end
 
     end
