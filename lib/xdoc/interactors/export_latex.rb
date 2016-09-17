@@ -2,8 +2,7 @@ require 'hanami/interactor'
 
 class LatexExporter
 
-  include Lotus::Interactor
-  include ::Noteshare::Core::Document
+  include Hanami::Interactor
 
   expose :message, :redirect_path
 
