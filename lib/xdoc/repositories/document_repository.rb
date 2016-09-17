@@ -15,6 +15,14 @@ class DocumentRepository
     end.first
   end
 
+  def self.find_by_id_or_identifier(id)
+    if id.class == Fixnum || id =~ /\A[0-9]*\z/
+      self.find id
+    else
+      self.find_by_identifier id
+    end
+  end
+
   def self.find_public
     query do
       where(public: true)

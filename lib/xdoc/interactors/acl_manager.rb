@@ -91,7 +91,7 @@ class ACLManager
 
   def add_document
     document_id = @object
-    document = DocumentRepository.find document_id
+    document = DocumentRepository.find_by_id_or_identifier document_id
     if document == nil
       @status = 'error'
       return
@@ -144,7 +144,7 @@ class ACLManager
 
   def grant_permission
     document_id = @object
-    document = DocumentRepository.find document_id
+    document = DocumentRepository.find_by_id_or_identifier document_id
     return if document == nil
     _user, user_id = @queue.shift
     _permission, permission = @queue.shift
@@ -161,7 +161,7 @@ class ACLManager
 
   def get_permissions
     document_id = @object
-    document = DocumentRepository.find document_id
+    document = DocumentRepository.find_by_id_or_identifier document_id
     return if document == nil
 
     _user, user_identifier = @queue.shift
@@ -247,7 +247,7 @@ class ACLManager
   # return list of acls to which the given document belongs
   def acls_of_document
     document_id = @object
-    document = DocumentRepository.find document_id
+    document = DocumentRepository.find_by_id_or_identifier document_id
     if document == nil
       @status = 'error'
       return
