@@ -28,19 +28,19 @@ class BackupManager
     username = @object
     puts "prepare_backups: #{username}"
     message = {title: "Backup log for #{username}"}.to_json + "\n"
-    object_name = "#{username}.log"
+    object_name = "#{username}/#{username}.log"
     AWS.put_string(message, object_name, 'backups')
     @status = 'success'
   end
 
   def get_log(username)
-    @log = AWS.get_string("#{username}.log", 'backups')
+    @log = AWS.get_string("#{username}/#{username}.log", 'backups')
   end
 
   def append_to_log(username, message)
     get_log(username)
     @log << message << "\n"
-    object_name = "#{username}.log"
+    object_name = "#{username}/#{username}.log"
     AWS.put_string(@log, object_name, 'backups')
   end
 
@@ -64,7 +64,7 @@ class BackupManager
     document = DocumentRepository.find id
     author_name  = document.author_name
     _verb, @backup_number = @commands.shift
-    backup_name = "#{author_name}-#{id}-backup-#{@backup_number}.json"
+    backup_name = "#{author_name}/#{author_name}-#{id}-backup-#{@backup_number}.json"
     puts "backup_name = #{backup_name}"
     doc_as_json_string = AWS.get_string(backup_name, 'backups')
     doc_as_json = JSON.parse doc_as_json_string
@@ -118,7 +118,7 @@ class BackupManager
     @backup_number = @document.get_backup_number + 1
     @backup_date = DateTime.now.to_s
     backup_string = @document.to_hash.to_json
-    object_name = "#{@document.author_name}-#{@document.id}-backup-#{@backup_number}.json"
+    object_name = "#{@document.author_name}/#{@document.author_name}-#{@document.id}-backup-#{@backup_number}.json"
     AWS.put_string(backup_string, object_name, 'backups')
     @document.put_backup_info(@backup_number, @backup_date)
     DocumentRepository.update @document
