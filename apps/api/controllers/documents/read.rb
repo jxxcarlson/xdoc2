@@ -24,10 +24,21 @@ module Api::Controllers::Documents
         checked_out_to = CheckoutManager.new("status=#{document.id}").call.reply
 
         if @user
-          document_hash = document.hash
+          command = "get_permissions=#{params['id']}&user=#{@access.username}"
+          permissions = ACLManager.new(command, @user.id).call.permissions
+          can_edit = permissions.include? 'edit'
+          puts "USER #{@user.username}, can_edit = #{can_edit}"
+          if can_edit
+            document_hash = document.hash
+          else
+            document_hash = document.public_hash
+          end
         else
           document_hash = document.public_hash
         end
+
+
+
 
         hash = {'status': 'success',
                 'document': document_hash,

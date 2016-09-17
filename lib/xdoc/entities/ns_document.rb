@@ -111,9 +111,12 @@ class NSDocument
 
   def public_links
     public_documents = []
-    self.links['documents'].each do |doc|
-      public_documents << doc if doc['public']
+    if self.links['documents']
+      self.links['documents'].each do |doc|
+        public_documents << doc if doc['public']
+      end
     end
+
     { 'parent' => self.parent_hash, 'documents' => public_documents}
   end
 
