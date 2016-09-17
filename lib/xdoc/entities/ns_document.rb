@@ -89,6 +89,34 @@ class NSDocument
     }
   end
 
+  def public_hash
+    {'id': self.id,
+     'identifier': self.identifier,
+     'title': self.title,
+     'kind': self.kind,
+     'has_subdocuments': self.has_subdocuments,
+     'url': "/documents/#{self.id}",
+     'owner_id': self.owner_id,
+     'author': self.author_name,
+     'public': self.public,
+     'created_at': self.created_at,
+     'updated_at': self.updated_at,
+     'text': self.text,
+     'rendered_text': self.rendered_text,
+     'links': self.public_links,
+     'dict': self.dict,
+     'tags': self.stringify_tags
+    }
+  end
+
+  def public_links
+    public_documents = []
+    self.links['documents'].each do |doc|
+      public_documents << doc if doc['public']
+    end
+    { 'parent' => self.parent_hash, 'documents' => public_documents}
+  end
+
   # Does not include text and rendered text
   def short_hash
     dict = self.dict || {}

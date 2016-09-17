@@ -22,8 +22,15 @@ module Api::Controllers::Documents
         can_show_source = dict['can_show_source'] || 'no'
 
         checked_out_to = CheckoutManager.new("status=#{document.id}").call.reply
-        hash = {'status' => 'success',
-                'document' => document.hash,
+
+        if @user
+          document_hash = document.hash
+        else
+          document_hash = document.public_hash
+        end
+
+        hash = {'status': 'success',
+                'document': document_hash,
                 'permissions': permissions,
                 'checked_out_to': checked_out_to,
                 'can_show_source': can_show_source
