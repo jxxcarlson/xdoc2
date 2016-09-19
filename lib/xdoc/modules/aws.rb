@@ -50,6 +50,7 @@ module AWS
 
   # read file on S3 and return it as a string
   # https://ruby.awsblog.com/post/Tx354Y6VTZ421PJ/Downloading-Objects-from-Amazon-S3-using-the-AWS-SDK-for-Ruby
+  # Example: str = AWS.get_string("craig-210-backup-1.json", "backups/craig")
   def self.get_string(object_name, folder='tmp')
 
     bucket = "psurl"
@@ -126,6 +127,45 @@ module AWS
     end
 
     return true
+  end
+
+  # Example: AWS.list('psurl', 'backups/craig/')
+  def list(bucket, folder,options={})
+
+    s3 = Aws::S3::Resource.new(
+        credentials: Aws::Credentials.new(ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY']),
+        region: 'us-west-1',
+        endpoint: 'https://s3.amazonaws.com'
+    )
+
+    data_files = s3.bucket(bucket).objects(prefix: folder).collect(&:key)
+
+    return data_files
+  end
+
+  def make_log(user_name)
+    # user = UserRepository.find_by_username user_name
+    eol = "\n"
+    log = ""
+    log << {"title": "Backup log for #{user_name}" }.to_json << eol
+    log_files = list('psurl', "backups/#{user_name}/")
+    log_files.each do |log_file_name|
+      log_file_name = log_file_name.sub("backups/", '')
+      puts "Getting #{log_file_name}"
+      log_data = JSON.parse get_string(log_file_name, "backups")
+      dict = log_data['dict'] || {}
+      bu = dict['backup'] || {}
+      puts bu =
+      log_item = {
+          'id': log_data['id'],
+          'title': log_data['title'],
+          'backup_number': bu['number'],
+          'timestamp': bu['date']
+      }.to_json
+      log << log_item << eol
+    end
+    put_string(log, "#{user_name}.log", "backups/#{user_name}")
+    log
   end
 
 end

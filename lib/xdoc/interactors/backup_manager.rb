@@ -34,7 +34,11 @@ class BackupManager
   end
 
   def get_log(username)
-    @log = AWS.get_string("#{username}/#{username}.log", 'backups')
+    begin
+      @log = AWS.get_string("#{username}/#{username}.log", 'backups')
+    rescue
+      @log = "{'title: Backup log for #{username}"
+    end
   end
 
   def append_to_log(username, message)
