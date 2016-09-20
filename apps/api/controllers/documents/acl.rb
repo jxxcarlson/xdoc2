@@ -13,6 +13,8 @@ module Api::Controllers::Documents
 
       puts request.query_string
       result = ACLManager.new(request.query_string, @user.id).call
+
+      puts "ACL list: #{result.acl_list}"
       self.body = { 'acl':request.query_string,
                     'status': result.status,
                     'commands': result.commands,

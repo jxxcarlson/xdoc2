@@ -258,6 +258,8 @@ class ACLManager
 
   def call
 
+    puts "Acl manager: #{@queue}"
+
     return if @owner == nil
 
     return if @queue == []

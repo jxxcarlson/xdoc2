@@ -261,7 +261,7 @@ class FindDocuments
 
   def call
     parse
-    # apply_permissions
+    apply_permissions
     normalize
     query = @queries.shift
     search(query)
