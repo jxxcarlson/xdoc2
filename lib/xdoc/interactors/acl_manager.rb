@@ -166,6 +166,9 @@ class ACLManager
 
     _user, user_identifier = @queue.shift
 
+    puts "EEE: User identifier: #{user_identifier}"
+    puts "EEE: User identifier class: #{user_identifier.class}"
+
     # ensure that the user_id is the username
     if user_identifier.class == String
       user = UserRepository.find_by_username user_identifier
