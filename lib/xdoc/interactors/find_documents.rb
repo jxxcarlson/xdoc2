@@ -44,6 +44,7 @@ class FindDocuments
 
   def initialize(query_string, access)
     @query_string = query_string.downcase
+    puts "QQQ: query_string = #{@query_string}"
     @access = access
     @documents = []
     @status = 400
