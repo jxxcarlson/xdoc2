@@ -16,6 +16,7 @@ gem 'rack-cors', :require => 'rack/cors'
 
 gem 'asciidoctor-latex'
 gem 'thread_safe'
+gem 'coderay'
 
 gem 'puma'
 
