@@ -167,7 +167,7 @@ class ACLManager
     _user, user_identifier = @queue.shift
 
     # ensure that the user_id is the username
-    if user_identifier =~ /\A[A-Za-z].*\z/
+    if user_identifier.class == String
       user = UserRepository.find_by_username user_identifier
     else
       user = UserRepository.find user_identifier
