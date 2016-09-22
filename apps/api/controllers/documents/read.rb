@@ -8,6 +8,7 @@ module Api::Controllers::Documents
     include Api::Action
 
     def return_document(document)
+
       if document
         if @user
           command = "get_permissions=#{document.id}&user=#{@user.username}"
@@ -23,9 +24,7 @@ module Api::Controllers::Documents
 
         checked_out_to = CheckoutManager.new("status=#{document.id}").call.reply
 
-        if @user
-          command = "get_permissions=#{params['id']}&user=#{@access.username}"
-          permissions = ACLManager.new(command, @user.id).call.permissions
+        def process_permissions(permissions, document)
           can_edit = permissions.include? 'edit'
           puts "USER #{@user.username}, can_edit = #{can_edit}"
           if can_edit
@@ -33,12 +32,18 @@ module Api::Controllers::Documents
           else
             document_hash = document.public_hash
           end
-        else
-          document_hash = document.public_hash
+          document_hash
         end
 
-
-
+        if @user
+          command = "get_permissions=#{params['id']}&user=#{@access.username}"
+          permissions = ACLManager.new(command, @user.id).call.permissions
+          if permissions
+            document_hash = process_permissions(permissions, document)
+          else
+            document_hash = document.public_hash
+          end
+        end
 
         hash = {'status': 'success',
                 'document': document_hash,
@@ -76,9 +81,7 @@ module Api::Controllers::Documents
       document
     end
 
-    def call(params)
-      access_granted = false
-
+    def check_user_and_access
       token = request.env["HTTP_ACCESSTOKEN"]
       if token
         @access = GrantAccess.new(token).call
@@ -87,11 +90,15 @@ module Api::Controllers::Documents
       else
         puts "DEBUG:   -- token NOT present"
       end
+    end
 
+    def call(params)
+      access_granted = false
+      check_user_and_access
       document = get_document(params['id'])
 
       if document == nil
-        puts "Can't find document for id = #{params['id']}"
+        document = DocumentRepository.find ENV['DEFAULT_DOCUMENT_ID']
       end
 
       if access_granted && document != nil
