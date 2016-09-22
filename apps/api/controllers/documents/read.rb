@@ -60,13 +60,15 @@ module Api::Controllers::Documents
       else
         document = DocumentRepository.find_by_identifier(id)
       end
-      if @access
-        puts "API: read, #{@access.username}, #{id}, #{document.title}"
-      else
-        puts "API: read, anonymous, #{id}, #{document.title}"
-      end
+
+
 
       if document
+        if @access
+          puts "API: read, #{@access.username}, #{id}, #{document.title}"
+        else
+          puts "API: read, anonymous, #{id}, #{document.title}"
+        end
         if document.has_subdocuments
           document.update_document_links
         end
