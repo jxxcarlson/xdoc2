@@ -7,9 +7,9 @@ class ReadDocument
 
   expose :document, :document_hash, :reply
 
-  def initialize(document_id, user_id = nil)
+  def initialize(document_id, user = nil)
    @document_id = document_id
-   @user_id = user_id
+   @user = user
   end
 
 
@@ -19,10 +19,6 @@ class ReadDocument
     else
       @document = DocumentRepository.find_by_identifier(@document_id)
     end
-  end
-
-  def get_user
-    @user = UserRepository.find_by_identifier @user_id
   end
 
   def update_subdocuments
@@ -51,8 +47,12 @@ class ReadDocument
   end
 
   def process_permissions
-    can_edit = @permissions.include? 'edit'
-    puts "USER #{@user.username}, can_edit = #{can_edit}"
+    if @permissions
+      can_edit = @permissions.include? 'edit'
+    else
+      can_edit = false
+    end
+    
     if can_edit
       @document_hash = @document.hash
     else
@@ -60,10 +60,17 @@ class ReadDocument
     end
   end
 
+  def can_show_source
+    dict = @document.dict || {}
+    dict['can_show_source'] || 'no'
+  end
+
+  def checked_out_to
+    CheckoutManager.new("status=#{@document.id}").call.reply
+  end
+
   def prepare_document
-      dict = @document.dict || {}
-      can_show_source = dict['can_show_source'] || 'no'
-      checked_out_to = CheckoutManager.new("status=#{@document_id}").call.reply
+
       get_permissions
       process_permissions
 
@@ -75,10 +82,12 @@ class ReadDocument
       }
   end
 
+
+  ## self.body = {'status' => 'success', 'error' => 'access not granted'}.to_json
+
   def call
     get_document
     handle_nil_document
-    get_user
     prepare_document
   end
 

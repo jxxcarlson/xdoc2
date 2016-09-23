@@ -15,7 +15,6 @@ class CheckoutManager
 
   def initialize(command)
     @commands = command.split('&').map{ |command| command.split('=') }
-    puts "CheckoutManager, @commands #{@commands}"
     @status = 'error'
   end
 

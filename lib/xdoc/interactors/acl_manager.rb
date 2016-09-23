@@ -117,7 +117,6 @@ class ACLManager
     verb, name = @queue.shift
     if verb == 'acl'
       acl = AclRepository.find_by_name name
-      puts "*** removing document #{document_id} from acl #{name}"
       acl.remove_document(document_id)
       document.leave_acl name
       @status = 'success'
@@ -166,9 +165,6 @@ class ACLManager
 
     _user, user_identifier = @queue.shift
 
-    puts "EEE: User identifier: #{user_identifier}"
-    puts "EEE: User identifier class: #{user_identifier.class}"
-
     # ensure that the user_id is the username
     if user_identifier.class == String
       user = UserRepository.find_by_username user_identifier
@@ -176,41 +172,27 @@ class ACLManager
       user = UserRepository.find user_identifier
     end
 
-    # puts "-1. user_id = #{user.id}"
-
     document_id = document_id.to_i
-    # puts "0. permissions: doc owner = #{document.owner_id}, user_id = #{user.id}"
     @permissions = []
 
     if document.public
       @permissions << 'read'
-      # puts "1. get_permissions: #{@permissions}"
     end
 
     if document.owner_id == user.id
       @permissions << 'edit'
       @permissions << 'read' if !(@permissions.include? 'read')
-      # puts "2. get_permissions: #{@permissions}"
     end
 
     if @permissions.count == 2
-      puts "3. count is 2, bailing out with get_permissions: #{@permissions}"
       @status = 'success'
       return
     end
 
     document.acls.each do |acl_name|
       acl = AclRepository.find_by_name acl_name
-      # puts "4.  loop, acl = #{acl.name}, get_permissions: #{@permissions}"
-      # puts "4a.   -- documents:   #{acl.documents}"
-      # puts "4b.   -- members:     #{acl.members}"
-      # puts "4c.   -- document_id: #{document_id}"
-      # puts "4d.   -- user_id:     #{user.id}"
-      # puts "4e.   -- contains do: #{acl.contains_document(document_id)}"
-      # puts "4f.   -- contains me: #{acl.contains_member(user.id)}"
       if acl.contains_document(document_id) && acl.contains_member(user.username)
         @permissions << acl.permission if !(@permissions.include? acl.permission)
-        # puts "5. get_permissions: #{@permissions}"
         break if @permissions.count == 2
       end
       @status = 'success'
@@ -242,7 +224,6 @@ class ACLManager
     AclRepository.find_by_owner_id(owner_id).all.each do |acl|
       result <<  acl.to_h
     end
-    # puts "ACL LIST = #{result}"
     @acl_list = result.to_json
     @status = 'success'
   end
@@ -260,8 +241,6 @@ class ACLManager
   end
 
   def call
-
-    puts "Acl manager: #{@queue}"
 
     return if @owner == nil
 

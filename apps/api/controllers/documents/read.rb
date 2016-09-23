@@ -16,21 +16,31 @@ module Api::Controllers::Documents
         @user = UserRepository.find_by_username @access.username
         @access_granted = @access.valid
       else
-        puts "DEBUG:   -- token NOT present"
+        # puts "DEBUG:   -- token NOT present"
+      end
+    end
+
+    def report(reply_hash)
+      doc = reply_hash[:document]
+      if @user
+        puts "API read: #{doc[:title]}, user: #{@user.username}"
+      else
+        puts "API read: #{doc[:title]}, user: anonymoous"
       end
     end
 
     def call(params)
       check_user_and_access
       if @access_granted
-        result = ReadDocument.new(params['id'], @user).call.result
+        result = ReadDocument.new(params['id'], @user).call
         HotListManager.new(@user, 'push', result.document).call.hotlist
       else
-        result = ReadDocument.new(params['id'], nil).call.result
+        result = ReadDocument.new(params['id'], nil).call
       end
-      self.body = {'status' => 'success', 'error' => 'access not granted'}.to_json
+      reply_hash = result.reply.to_h
+      report(reply_hash)
+      self.body = reply_hash.to_json
     end
-
 
     def verify_csrf_token?
       false

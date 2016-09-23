@@ -53,16 +53,13 @@ module XDoc
 
     def push(item)
       if @items.count >= @capacity
-        puts 'SHIFT'
         @items.shift
       end
-      puts 'PUSH'
       @items.push(item)
     end
 
     def push_promote(item, attr)
       k = self.attribute_list(attr).index(item[attr])
-      puts "push_unique: #{k}"
       if k == nil
         self.push(item)
       else
