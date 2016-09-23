@@ -52,7 +52,7 @@ class ReadDocument
     else
       can_edit = false
     end
-    
+
     if can_edit
       @document_hash = @document.hash
     else
