@@ -1,6 +1,10 @@
 class NSDocument
   include Hanami::Entity
 
+
+  ##
+  ## self.links['documents'] = array of short_hashes of documents
+
   attributes :id, :identifier, :owner_id, :author_name, :collection_id, :title,
              :created_at, :updated_at, :viewed_at, :visit_count,
              :text, :rendered_text, :public, :dict, :kind, :links, :tags, :backup_number
@@ -122,6 +126,7 @@ class NSDocument
 
   # Does not include text and rendered text
   def short_hash
+    puts "In shoert hash 2, #{self.title}, checked_out_to: #{dict['checked_out_to']}"
     dict = self.dict || {}
     {'id': self.id,
      'identifier': self.identifier,
@@ -136,7 +141,7 @@ class NSDocument
      'kind': self.kind,
      'tags': self.stringify_tags,
      'links': self.links,
-     'checked_out_to': dict['checked_out_to'],
+     'checked_out_to': dict['checked_out_to'] || '',
      'status': dict['status']
     }
   end
@@ -155,6 +160,7 @@ class NSDocument
 
   # Like above, but a hack to solve the :id vs 'id' problem -- BAAD!
   def short_hash2
+    puts "In shoert hash 2, #{self.title}, checked_out_to: #{dict['checked_out_to']}"
     {'id' => self.id,
      'identifier' => self.identifier,
      'title' => self.title,
@@ -167,6 +173,7 @@ class NSDocument
      'updated_at' => self.updated_at,
      'kind' => self.kind,
      'tags' => self.stringify_tags,
+     'checked_out_to'=> dict['checked_out_to'] || '',
      'links' => self.links
     }
   end
@@ -500,7 +507,8 @@ class NSDocument
 
   def check_in_by(username)
     dict = self.dict || {}
-    if dict['checked_out_to'] == username
+    if self.author_name == username || dict['checked_out_to'] == username
+      puts "CHECKDNG IN (2)"
       dict['checked_out_to'] = ''
       self.dict = dict
       DocumentRepository.update self
@@ -518,7 +526,8 @@ class NSDocument
       self.check_out_to(username)
       return username
     end
-    if status == username
+    if status == username || self.author_name == username
+      puts "CHECKDNG IN (1)"
       self.check_in_by(username)
       return 'checked_in'
     end
