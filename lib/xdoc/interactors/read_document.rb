@@ -88,6 +88,7 @@ class ReadDocument
   def call
     get_document
     handle_nil_document
+    update_subdocuments
     prepare_document
   end
 
