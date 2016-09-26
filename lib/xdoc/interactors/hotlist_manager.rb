@@ -21,7 +21,7 @@ class HotListManager
   def push
     hash = { 'id' => @document.id,
              'title' => @document.title,
-             'author_name'=> @document.author_name,
+             'author'=> @document.author_name,
              'checked_out_to' => @document.checked_out_to,
              'url' => "documents/#{@document.id}?toc",
              'has_subdocuments' => @document.has_subdocuments
