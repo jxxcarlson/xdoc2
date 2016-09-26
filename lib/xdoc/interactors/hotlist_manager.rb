@@ -22,6 +22,7 @@ class HotListManager
     hash = { 'id' => @document.id,
              'title' => @document.title,
              'author'=> @document.author_name,
+             'checked_out_to' => @document.checked_out_to,
              'url' => "documents/#{@document.id}?toc",
              'has_subdocuments' => @document.has_subdocuments
     }
