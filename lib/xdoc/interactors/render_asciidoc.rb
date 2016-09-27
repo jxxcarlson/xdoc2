@@ -40,9 +40,7 @@ class RenderAsciidoc
       image = ImageRepository.find id
       if image
         @image_map[id] = {'url': image.url, 'title': image.title}
-        puts "process_images, image url = #{image.url}}"
         new_ref = "image::#{image.url}[#{label}]"
-        puts "process_images: new_ref = #{new_ref}"
         @source_text = @source_text.sub(old_ref, new_ref)
       end
     end
@@ -71,7 +69,6 @@ class RenderAsciidoc
   def call
     base_options = { :safe => :safe, :source_highlighter => :coderay, :coderay_css => :class }
     options = base_options.merge @new_options
-    puts "RENDER OPTIONS: #{options}"
     preprocess
     @rendered_text = ::Asciidoctor.convert(@source_text, options)
     # @rendered_text = { rendered_text: ::Asciidoctor.convert(@source_text, options)}.to_json

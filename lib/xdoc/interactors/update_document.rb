@@ -47,7 +47,7 @@ class UpdateDocument
   end
 
   def update
-    puts "*** UPDATE #{@document.title}"
+
     if @document
 
       @document.update_from_hash(@params)

@@ -9,9 +9,7 @@ module Api::Controllers::Documents
 
 
     def call(params)
-      puts "API: update #{params['id']}"
-      puts "  -- kind: #{params['kind']}"
-
+      
       verify_request(request)
       user = UserRepository.find_by_username @access.username
       command = "get_permissions=#{params['id']}&user=#{@access.username}"
