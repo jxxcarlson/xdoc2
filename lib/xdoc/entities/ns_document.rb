@@ -126,7 +126,6 @@ class NSDocument
 
   # Does not include text and rendered text
   def short_hash
-    puts "In shoert hash 2, #{self.title}, checked_out_to: #{dict['checked_out_to']}"
     dict = self.dict || {}
     {'id': self.id,
      'identifier': self.identifier,
@@ -160,7 +159,6 @@ class NSDocument
 
   # Like above, but a hack to solve the :id vs 'id' problem -- BAAD!
   def short_hash2
-    puts "In shoert hash 2, #{self.title}, checked_out_to: #{dict['checked_out_to']}"
     {'id' => self.id,
      'identifier' => self.identifier,
      'title' => self.title,

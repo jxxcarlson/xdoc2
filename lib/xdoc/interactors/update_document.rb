@@ -20,7 +20,6 @@ class UpdateDocument
 
   def use_latex_macros
     if @document.text =~ /include_latex_macros::default/
-      puts "*** Using tex macros from S3 ..."
       tex_macro_file_name = "#{@document.author_name}.tex"
       tex_macros = AWS.get_string(tex_macro_file_name, folder='latex_macros')
       if tex_macros
@@ -33,7 +32,6 @@ class UpdateDocument
 
   def update_latex_macros
     if @document.title == 'texmacros'
-      puts "update tex macro file"
       object_name = "#{@username}.tex"
       AWS.put_string(@document.text, object_name, 'latex_macros')
     end
@@ -65,12 +63,9 @@ class UpdateDocument
   end
 
   def attach_new_child
-    puts "attach_new_child, commands =  #{@commands}"
     command = @commands.shift
     _verb, id = command.split('=')
     parent_document = DocumentRepository.find id
-    puts "  -- parent_document = #{parent_document.title}"
-    puts "  -- child_document  = #{@document.title}"
     if parent_document
       parent_document.adopt_child(@document)
       @updated_document = parent_document

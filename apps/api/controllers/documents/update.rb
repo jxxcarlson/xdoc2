@@ -9,7 +9,7 @@ module Api::Controllers::Documents
 
 
     def call(params)
-      
+
       verify_request(request)
       user = UserRepository.find_by_username @access.username
       command = "get_permissions=#{params['id']}&user=#{@access.username}"
