@@ -33,14 +33,14 @@ class RenderAsciidoc
 
   def process_images
     @image_map = { }
-    scanner = @source_text.scan /image::([0-9]*?)\[(.*?)\]/
+    scanner = @source_text.scan /(image|video|audio)::([0-9]*?)\[(.*?)\]/
     scanner.each do |item|
-      id, label = item
-      old_ref = "image::#{id}[#{label}]"
+      media_type, id, label = item
+      old_ref = "#{media_type}::#{id}[#{label}]"
       image = ImageRepository.find id
       if image
         @image_map[id] = {'url': image.url, 'title': image.title}
-        new_ref = "image::#{image.url}[#{label}]"
+        new_ref = "#{media_type}::#{image.url}[#{label}]"
         @source_text = @source_text.sub(old_ref, new_ref)
       end
     end
