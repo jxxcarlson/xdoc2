@@ -101,8 +101,8 @@ class LatexExporter
   end
 
   def call
-    rewrite_media_urls_for_export
     use_latex_macros
+    rewrite_media_urls_for_export
     export
     tar
     upload
