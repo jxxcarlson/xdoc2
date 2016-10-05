@@ -68,25 +68,29 @@ class LatexExporter
 
     puts '*** BB'
     @source = prefix + @source + suffix
-    renderer = ::RenderAsciidoc.new(source_text: @source).call
+    renderer = ::RenderAsciidoc.new(source_text: @source, options: {}).call
     latex_text = renderer.rendered_text
+
+    puts "Latex text: #{latex_text}"
 
     file_name = normalize @document.title
     system("mkdir -p outgoing/#{@document.id}")
 
     puts '*** BB'
-    path = "outgoing/#{@document.id}/#{file_name}.tex"
+    puts "latex_text: #{latex_text.length} characters"
+    # path = "outgoing/#{@document.id}/#{file_name}.tex"
+    path = "#{@document.id}/#{file_name}.tex"
     IO.write(path, latex_text)
 
-    puts '*** VV'
+    puts '*** CC'
     path = "outgoing/#{@document.id}/#{file_name}.adoc"
     IO.write(path, @document.text)
-    puts '*** CC'
+    puts '*** DD'
   end
 
   def tar
     system("mkdir -p outgoing/tar")
-    system("CC outgoing; tar -cvf ./tar/#{@document.id}.tar #{@document.id}/; cd ..")
+    system("cd outgoing; tar -cvf ./tar/#{@document.id}.tar #{@document.id}/; cd ..")
   end
 
   def upload
