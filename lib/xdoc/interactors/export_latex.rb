@@ -9,7 +9,9 @@ class LatexExporter
 
   def initialize(id)
     @document = DocumentRepository.find id
+    puts "*** TITLE: #{@document.title}"
     @source = @document.text
+    puts "*** TEXT: #{@document.title[0..40]}"
   end
 
   def normalize(str)
@@ -87,11 +89,17 @@ class LatexExporter
   end
 
   def call
+    puts '*** A'
     rewrite_media_urls_for_export
+    puts '*** B'
     export
+    puts '*** C'
     tar
+    puts '*** D'
     upload
+    puts '*** E'
     @tar_url = "http://psurl.s3.amazonaws.com/latex/#{@document.id}.tar"
+    puts '*** F'
   end
 
 
