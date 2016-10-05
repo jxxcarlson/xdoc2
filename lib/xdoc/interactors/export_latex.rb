@@ -56,6 +56,7 @@ class LatexExporter
 
 
   def export
+    puts '*** AA'
     preamble = AWS.get_string("preamble.tex", "strings")
     prefix = preamble
     prefix <<  "\n\n\\title{#{@document.title}}"
@@ -65,6 +66,7 @@ class LatexExporter
     prefix << "\n\n"
    suffix = "\n\n\\end{document}n\n"
 
+    puts '*** BB'
     @source = prefix + @source + suffix
     renderer = ::RenderAsciidoc.new(source_text: @source).call
     latex_text = renderer.rendered_text
@@ -72,16 +74,19 @@ class LatexExporter
     file_name = normalize @document.title
     system("mkdir -p outgoing/#{@document.id}")
 
+    puts '*** BB'
     path = "outgoing/#{@document.id}/#{file_name}.tex"
     IO.write(path, latex_text)
 
+    puts '*** VV'
     path = "outgoing/#{@document.id}/#{file_name}.adoc"
     IO.write(path, @document.text)
+    puts '*** CC
   end
 
   def tar
     system("mkdir -p outgoing/tar")
-    system("cd outgoing; tar -cvf ./tar/#{@document.id}.tar #{@document.id}/; cd ..")
+    system("CC outgoing; tar -cvf ./tar/#{@document.id}.tar #{@document.id}/; cd ..")
   end
 
   def upload
