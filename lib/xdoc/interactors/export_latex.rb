@@ -81,7 +81,7 @@ class LatexExporter
     puts '*** VV'
     path = "outgoing/#{@document.id}/#{file_name}.adoc"
     IO.write(path, @document.text)
-    puts '*** CC
+    puts '*** CC'
   end
 
   def tar
