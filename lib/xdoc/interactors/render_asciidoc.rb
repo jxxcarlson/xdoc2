@@ -67,7 +67,7 @@ class RenderAsciidoc
   end
 
   def call
-    base_options = { :safe => :safe, :source_highlighter => :coderay, :coderay_css => :class }
+    base_options = { :safe => :safe, :source_highlighter => :coderay, :coderay_css => :class, :backend => 'latex' }
     options = base_options.merge @new_options
     preprocess
     @rendered_text = ::Asciidoctor.convert(@source_text, options)

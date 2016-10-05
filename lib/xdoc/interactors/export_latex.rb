@@ -19,18 +19,10 @@ class LatexExporter
     str.gsub(/_*_/, '_')
   end
 
-  def download_file(url, filepath)
-    # return unless File.file?(filepath)
-    File.open(filepath, "wb") do |saved_file|
-      # the following "open" is provided by open-uri
-      open(url, "rb") do |read_file|
-        saved_file.write(read_file.read) if read_file
-      end
-    end
-  end
 
   def rewrite_media_urls_for_export
-    doc_folder = @options[:doc_folder] || 'a2a2a2'
+
+    system("mkdir -p outgoing/#{@document.id}/images")
 
     rxTag = /(image|video|audio)(:+)(.*?)\[(.*)\]/
     scanner = @source.scan(rxTag)
@@ -49,10 +41,10 @@ class LatexExporter
       if id =~ /^\d+\d$/
         iii = ImageRepository.find id
         if iii
-          download_file_name = iii.file_name.sub('image::', 'image_')
-          download_path = "outgoing/#{doc_folder}/images/#{download_file_name}"
-          new_tag = "image::images/#{download_file_name}[#{attributes}]"
-          download_file(iii.url2, download_path)
+          download_file_name = iii.file
+          download_path = "outgoing/#{@document.id}/images/#{download_file_name}"
+          new_tag = "#{media_type}::images/#{download_file_name}[#{attributes}]"
+          AWS.download('psurl', iii.s3_key, download_path)
           @source = @source.sub(old_tag, new_tag)
         end
       end
@@ -67,7 +59,8 @@ class LatexExporter
     header << ":numbered:" << "\n"
     header << ":toc2:" << "\n\n\n"
 
-    renderer = Render.new(header + texmacros + document.compile, options )
+
+    renderer = RenderAsciidoc.new(source_text: header + texmacros + document.compile, options: options )
     renderer.rewrite_media_urls_for_export
     file_name = normalize document.title
     system("mkdir -p outgoing/#{document.id}")
@@ -76,14 +69,7 @@ class LatexExporter
     IO.write(path, renderer.source)
   end
 
-  def call
-    if @document
-      export_latex
-      @message = make_message
-    else
-      @redirect_path = "/error:#{id}?Document not found" if @document == nil
-    end
-  end
+
 
   def folder
     "outgoing/#{@document.id}"
@@ -107,7 +93,7 @@ class LatexExporter
 
   def export_latex
     system("mkdir -p outgoing/#{@document.id}/images")
-    self.export_adoc
+    export_adoc(@document, {})
     cmd = "asciidoctor-latex -a inject_javascript=no #{adoc_file_path}"
     system(cmd)
     # system("tar -cvf #{folder}.tar #{folder}/")
@@ -117,11 +103,34 @@ class LatexExporter
     Noteshare::AWS.upload("#{@document.id}.tar", "#{folder}.tar", 'latex')
   end
 
-  def make_message
-    output = "<p style='margin:3em;'> <strong>#{@document.title}</strong> exported as Asciidoc and LaTeX to "
-    output << "<a href='http://vschool.s3.amazonaws.com/latex/#{@document.id}.tar'>this link</a> "
-    output << "<p style='margin:3em;'> The file to download from the link is #{@document.id}.tar</p>"
-    output << "</p>\n\n"
+  def export
+    preamble = AWS.get_string("preamble.tex", "strings")
+    prefix = preamble
+    prefix <<  "\n\n\\title{#{@document.title}}"
+    prefix << "\n\n\\begin{document}\n\n"
+    prefix << "\n\n\\maketitle"
+    prefix << "\n\n\\tableofcontents"
+    prefix << "\n\n"
+   suffix = "\n\n\\end{document}n\n"
+
+    @source = prefix + @source + suffix
+    renderer = ::RenderAsciidoc.new(source_text: @source).call
+    latex_text = renderer.rendered_text
+
+    file_name = normalize @document.title
+    system("mkdir -p outgoing/#{@document.id}")
+
+    path = "outgoing/#{@document.id}/#{file_name}.tex"
+    IO.write(path, latex_text)
+
+    path = "outgoing/#{@document.id}/#{file_name}.adoc"
+    IO.write(path, @document.text)
   end
+
+  def call
+    rewrite_media_urls_for_export
+    export
+  end
+
 
 end

@@ -130,5 +130,10 @@ class Image
     end
   end
 
+  def s3_key
+    true_file_name = self.url.split('/')[-1]
+    "#{self.path}/#{true_file_name}"
+  end
+
 end
 
