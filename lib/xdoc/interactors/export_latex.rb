@@ -1,17 +1,17 @@
 require 'hanami/interactor'
+require_relative 'render_asciidoc'
 
 class LatexExporter
 
   include Hanami::Interactor
+  include Asciidoctor
 
   expose :tar_url
 
 
   def initialize(id)
     @document = DocumentRepository.find id
-    puts "*** TITLE: #{@document.title}"
     @source = @document.text
-    puts "*** TEXT: #{@document.title[0..40]}"
   end
 
   def normalize(str)
@@ -54,9 +54,20 @@ class LatexExporter
 
   end
 
+  def use_latex_macros
+    if @document.text =~ /include_latex_macros::default/
+      tex_macro_file_name = "#{@document.author_name}.tex"
+      tex_macros = AWS.get_string(tex_macro_file_name, folder='latex_macros')
+      if tex_macros
+        @source = @document.text.sub('include_latex_macros::default[]', "\n++++\n\\(\n\n#{tex_macros}\n\\)\n++++\n")
+      end
+    else
+      @source = @document.text
+    end
+  end
+
 
   def export
-    puts '*** AA'
     preamble = AWS.get_string("preamble.tex", "strings")
     prefix = preamble
     prefix <<  "\n\n\\title{#{@document.title}}"
@@ -66,27 +77,18 @@ class LatexExporter
     prefix << "\n\n"
     suffix = "\n\n\\end{document}n\n"
 
-    puts '*** BB'
-    @source = prefix + @source + suffix
-    renderer = ::RenderAsciidoc.new(source_text: @source, options: {:backend => 'latex'}).call
-    latex_text = renderer.rendered_text
-
-    puts "Latex text: #{latex_text}"
-    puts '*** BBBBB'
+    options = { :safe => :safe, :source_highlighter => :coderay, :coderay_css => :class, :backend => 'latex' }
+    latex_text = Asciidoctor.convert @source, options
+    latex_text = prefix + latex_text + suffix
 
     file_name = normalize @document.title
     system("mkdir -p outgoing/#{@document.id}")
 
-    puts '*** BB'
-    puts "latex_text: #{latex_text.length} characters"
-    # path = "outgoing/#{@document.id}/#{file_name}.tex"
-    path = "#{@document.id}/#{file_name}.tex"
+    path = "outgoing/#{@document.id}/#{file_name}.tex"
     IO.write(path, latex_text)
 
-    puts '*** CC'
     path = "outgoing/#{@document.id}/#{file_name}.adoc"
     IO.write(path, @document.text)
-    puts '*** DD'
   end
 
   def tar
@@ -99,17 +101,12 @@ class LatexExporter
   end
 
   def call
-    puts '*** A'
     rewrite_media_urls_for_export
-    puts '*** B'
+    use_latex_macros
     export
-    puts '*** C'
     tar
-    puts '*** D'
     upload
-    puts '*** E'
     @tar_url = "http://psurl.s3.amazonaws.com/latex/#{@document.id}.tar"
-    puts '*** F'
   end
 
 

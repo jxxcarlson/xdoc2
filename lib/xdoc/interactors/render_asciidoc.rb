@@ -66,6 +66,7 @@ class RenderAsciidoc
     # process_includes
   end
 
+
   def call
     puts "this is RenderAsciidoc"
     puts "The source text has #{@source_text.length} characters"
@@ -75,10 +76,10 @@ class RenderAsciidoc
 
     puts "options: #{options}"
     puts "========================"
-    # options = base_options
+
     preprocess
     @rendered_text = ::Asciidoctor.convert(@source_text, options)
-    # @rendered_text = { rendered_text: ::Asciidoctor.convert(@source_text, options)}.to_json
+
   end
 
 end
