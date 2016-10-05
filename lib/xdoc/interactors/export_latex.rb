@@ -64,14 +64,15 @@ class LatexExporter
     prefix << "\n\n\\maketitle"
     prefix << "\n\n\\tableofcontents"
     prefix << "\n\n"
-   suffix = "\n\n\\end{document}n\n"
+    suffix = "\n\n\\end{document}n\n"
 
     puts '*** BB'
     @source = prefix + @source + suffix
-    renderer = ::RenderAsciidoc.new(source_text: @source, options: {}).call
+    renderer = ::RenderAsciidoc.new(source_text: @source, options: {:backend => 'latex'}).call
     latex_text = renderer.rendered_text
 
     puts "Latex text: #{latex_text}"
+    puts '*** BBBBB'
 
     file_name = normalize @document.title
     system("mkdir -p outgoing/#{@document.id}")

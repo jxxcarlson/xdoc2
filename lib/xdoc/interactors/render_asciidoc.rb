@@ -67,8 +67,15 @@ class RenderAsciidoc
   end
 
   def call
-    base_options = { :safe => :safe, :source_highlighter => :coderay, :coderay_css => :class, :backend => 'latex' }
+    puts "this is RenderAsciidoc"
+    puts "The source text has #{@source_text.length} characters"
+
+    base_options = { :safe => :safe, :source_highlighter => :coderay, :coderay_css => :class }
     options = base_options.merge @new_options
+
+    puts "options: #{options}"
+    puts "========================"
+    # options = base_options
     preprocess
     @rendered_text = ::Asciidoctor.convert(@source_text, options)
     # @rendered_text = { rendered_text: ::Asciidoctor.convert(@source_text, options)}.to_json
