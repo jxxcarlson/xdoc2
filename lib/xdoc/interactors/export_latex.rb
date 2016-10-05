@@ -4,11 +4,10 @@ class LatexExporter
 
   include Hanami::Interactor
 
-  expose :message, :redirect_path
+  expose :tar_url
 
 
-  def initialize(params)
-    id = params[:id]
+  def initialize(id)
     @document = DocumentRepository.find id
     @source = @document.text
   end
@@ -53,55 +52,6 @@ class LatexExporter
 
   end
 
-  def export_adoc(document, options)
-    header = '= ' << document.title << "\n"
-    header << document.author << "\n"
-    header << ":numbered:" << "\n"
-    header << ":toc2:" << "\n\n\n"
-
-
-    renderer = RenderAsciidoc.new(source_text: header + texmacros + document.compile, options: options )
-    renderer.rewrite_media_urls_for_export
-    file_name = normalize document.title
-    system("mkdir -p outgoing/#{document.id}")
-    system("mkdir -p outgoing/#{document.id}/images")
-    path = "outgoing/#{document.id}/#{file_name}.adoc"
-    IO.write(path, renderer.source)
-  end
-
-
-
-  def folder
-    "outgoing/#{@document.id}"
-  end
-
-  def adoc_file_path
-    file_name = normalize @document.title
-    "#{folder}/#{file_name}.adoc"
-  end
-
-  def latex_file_path
-    file_name =  normalize @document.title
-    "#{folder}/#{file_name}.tex"
-  end
-
-  def latex_file_name
-    file_name = normalize @document.title
-    "#{file_name}.tex"
-  end
-
-
-  def export_latex
-    system("mkdir -p outgoing/#{@document.id}/images")
-    export_adoc(@document, {})
-    cmd = "asciidoctor-latex -a inject_javascript=no #{adoc_file_path}"
-    system(cmd)
-    # system("tar -cvf #{folder}.tar #{folder}/")
-    system("cd outgoing; tar -cvf ../#{folder}.tar #{@document.id}/; cd ..")
-    puts "FILE_NAME: #{@document.id}.tar".red
-    puts "TMPFILE: #{folder}.tar".red
-    Noteshare::AWS.upload("#{@document.id}.tar", "#{folder}.tar", 'latex')
-  end
 
   def export
     preamble = AWS.get_string("preamble.tex", "strings")
@@ -127,9 +77,21 @@ class LatexExporter
     IO.write(path, @document.text)
   end
 
+  def tar
+    system("mkdir -p outgoing/tar")
+    system("cd outgoing; tar -cvf ./tar/#{@document.id}.tar #{@document.id}/; cd ..")
+  end
+
+  def upload
+    AWS.upload2('psurl', "latex/#{@document.id}.tar", "outgoing/tar/#{@document.id}.tar")
+  end
+
   def call
     rewrite_media_urls_for_export
     export
+    tar
+    upload
+    @tar_url = "http://psurl.s3.amazonaws.com/latex/#{@document.id}.tar"
   end
 
 

@@ -27,6 +27,21 @@ module AWS
 
   end
 
+  def self.upload2(bucket, key,  upload_path)
+
+    s3 = Aws::S3::Resource.new(
+        credentials: Aws::Credentials.new(ENV['AWS_ACCESS_KEY_ID'], ENV['AWS_SECRET_ACCESS_KEY']),
+        region: 'us-west-1',
+        endpoint: 'https://s3.amazonaws.com'
+    )
+
+    obj = s3.bucket(bucket).object(key)
+    obj.put(upload_path, acl: 'public-read')
+
+    # return obj.public_url
+
+  end
+
   # Example: AWS.download('psurl', 'images/jc/bird201-cf60.jpg', 'abcdefg1234.jpg')
   def self.download(bucket, key, download_path)
 
@@ -39,7 +54,6 @@ module AWS
     obj = s3.bucket(bucket).object(key)
     obj.get(response_target: download_path)
 
-    # s3.bucket(bucket).object(key).get(response_target: '/path/to/file')
   end
 
 
