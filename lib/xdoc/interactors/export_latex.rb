@@ -59,7 +59,8 @@ class LatexExporter
       tex_macro_file_name = "#{@document.author_name}.tex"
       tex_macros = AWS.get_string(tex_macro_file_name, folder='latex_macros')
       if tex_macros
-        @source = @document.text.sub('include_latex_macros::default[]', "\n++++\n\\(\n\n#{tex_macros}\n\\)\n++++\n")
+        #@source = @document.text.sub('include_latex_macros::default[]', "\n++++\n\\(\n\n#{tex_macros}\n\\)\n++++\n")
+        @source = @document.text.sub('include_latex_macros::default[]', "\n\n[env.texmacro]\n--\n#{tex_macros}\n--\n\n")
       end
     else
       @source = @document.text
