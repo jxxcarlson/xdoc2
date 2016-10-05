@@ -36,11 +36,11 @@ module AWS
     )
 
     obj = s3.bucket(bucket).object(key)
-    obj.put(upload_path, acl: 'public-read')
-
-    # return obj.public_url
+    obj.upload_file(upload_path, acl: 'public-read')
 
   end
+
+  # return obj.public_url
 
   # Example: AWS.download('psurl', 'images/jc/bird201-cf60.jpg', 'abcdefg1234.jpg')
   def self.download(bucket, key, download_path)
