@@ -43,8 +43,8 @@ class FindDocuments
   expose :documents, :document_count, :document_hash_array, :first_document
 
   def initialize(query_string, access)
-    # @query_string = query_string.downcase
-    @query_string = query_string
+    @query_string = query_string.downcase
+    # @query_string = query_string
     puts "QQQ: query_string = #{@query_string}"
     @access = access
     @documents = []
