@@ -116,7 +116,11 @@ class FindDocuments
   end
 
   def id_search(arg)
-    @documents = [DocumentRepository.find(arg)]
+    if arg =~ /\A[1-9][0-9]*\z/
+      @documents = [DocumentRepository.find(arg)]
+    else
+      @documents = [DocumentRepository.find_by_identifier(arg)]
+    end
   end
 
   def tag_search(arg)
