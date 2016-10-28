@@ -33,7 +33,8 @@ class CreateHomePage
     if document.kind == 'text'
       document.rendered_text = document.text
     else
-      document.rendered_text = Asciidoctor.convert(document.text)
+      # document.rendered_text = Asciidoctor.convert(document.text)
+      document.rendered_text = ::RenderAsciidoc.new(source_text: document.text).call.rendered_text
     end
 
     puts "*** Document #{document.title} created as #{document.kind}"

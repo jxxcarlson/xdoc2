@@ -97,10 +97,28 @@ class User
 
   def self.make_home_pages
     text = "Skeleton home page. Edit it to make like you want it to be.\n\n"
-    # text << "xref::227[Manuscripta User Manual]\n\n"
-    # text << "xref::152[Asciidoc Guide]\n\n"
+    text << "xref::227[Manuscripta User Manual]\n\n"
+    text << "xref::152[Asciidoc Guide]\n\n"
     UserRepository.all.each do |user|
       CreateHomePage.new(user, text).call
+    end
+  end
+
+  def self.edit_home_pages
+    text = "Skeleton home page. Edit it to make like you want it to be.\n\n"
+    text << "xref::227[Manuscripta User Manual]\n\n"
+    text << "xref::152[Asciidoc Guide]\n\n"
+    rendered_text = ::RenderAsciidoc.new(source_text: text).call.rendered_text
+    puts "Rendered text:\n=======\n\n #{rendered_text}\n=========\n\n"
+    UserRepository.all.each do |user|
+      if !(['dilibop', 'jc'].include? user.username)
+        puts "EDIT #{user.username}"
+        document = DocumentRepository.find_by_title "#{user.username}.home"
+        puts "  -- confirm: document = #{document.title}"
+        document.text = text
+        document.rendered_text = rendered_text
+        DocumentRepository.update document
+      end
     end
   end
 
