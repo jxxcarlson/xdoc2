@@ -16,10 +16,15 @@ module Api::Controllers::Users
       document
     end
 
+    def create_home_page(user)
+      text = "Skeleton home page. Edit it to make like you want it to be.\n\n"
+      text << "xref::jc.manuscripta_user_manual[Manuscripta User Manual]\n\n"
+      text << "xref::jc.asciidoc_guide[Asciidoc Guide]\n\n"
+      CreateHomePage.new(user, text).call
+    end
+
     def call(params)
       result = CreateUser.new(params).call
-
-
 
       # self.body = "username = #{params['username']}, password = #{params['password']}, password_confirmation = #{params['password_confirmation']}, email = #{params['email']} "
       if result.err
@@ -30,6 +35,7 @@ module Api::Controllers::Users
         user = result.user
         error = 'None'
         document = create_document(user)
+        create_home_page(user)
         puts "DOC: #{document.id}, title: #{document.title}"
         # response.status = 200
         access= AccessToken.new(username: params[:username], password: params[:password]).call

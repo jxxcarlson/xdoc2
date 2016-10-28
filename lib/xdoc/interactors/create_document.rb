@@ -1,17 +1,35 @@
 require 'hanami/interactor'
 require_relative 'identifier'
 
+# var parameter = JSON.stringify({
+# title: $scope.title, token: access_token, options: JSON.stringify($scope.formData),
+#    current_document_id: self.currentDocument.id, parent_document_id: self.parent.id
+# });
+
+#  params:
+#  title, token: access_token, options: formData,
+#  current_document_id, parent_document_id
+
 
 
 class CreateDocument
 
   include Hanami::Interactor
+  include Asciidoctor
 
 
   expose :new_document, :parent_document, :status
 
   def initialize(params, author_id)
     @params = params
+    # puts "CreateDocument, params: #{params.env['router.params']}"
+    # Example: options = {"child"=>false, "position"=>"null"}
+    puts "  -- title: #{params['title']}"
+    puts "  -- options: #{params['options']}"
+    puts "  -- current_document_id: #{params['current_document_id']}"
+    puts "  -- parent_document_id: #{params['parent_document_id']}"
+    puts "  -- text: #{params['text']}"
+
     @author_id = author_id
     opts = params['options'] || ""
     if opts.length < 5
@@ -26,10 +44,13 @@ class CreateDocument
     author = UserRepository.find @author_id
     document.owner_id = author.id
     document.author_name = author.username
-    document.text = "(Dummy text for ew document #{document.title})"
-    document.rendered_text = "(Dummy text for new document #{document.title})"
-
+    document.text = @params[:text] || "(Dummy text for ew document #{document.title})"
     document.kind = author.get_preference('doc_format') || 'asciidoc'
+    if document.kind == 'text'
+      document.rendered_text = document.text
+    else
+      document.rendered_text = Asciidoctor.convert(document.text)
+    end
 
     puts "*** Document #{document.title} created as #{document.kind}"
 

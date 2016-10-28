@@ -15,6 +15,12 @@ class DocumentRepository
     end.first
   end
 
+  def self.find_by_title(title)
+    query do
+      where(title: title)
+    end.first
+  end
+
   def self.find_by_id_or_identifier(id)
     if id.class == Fixnum || id =~ /\A[0-9]*\z/
       self.find id

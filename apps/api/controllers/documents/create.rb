@@ -8,10 +8,19 @@ module Api::Controllers::Documents
   class Create
     include Api::Action
 
-
+    def parameters
+      # params.env['router.params']
+      # Example: options = {"child"=>false, "position"=>"null"}
+      output_hash = {}
+      output_hash['title'] = params['title']
+      output_hash['options'] = params['options']
+      output_hash['current_document_id'] = params['current_document_id']
+      output_hash['parent_document_id'] = params['parent_document_id']
+      output_hash
+    end
 
     def create_document
-      result = CreateDocument.new(params, @access.user_id).call
+      result = CreateDocument.new(parameters, @access.user_id).call
       if result.status == 'success'
         hash = result.new_document.to_hash
         puts "\n\nNEW DOCUMENT: #{hash}\n\n"
