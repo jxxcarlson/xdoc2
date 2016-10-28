@@ -18,8 +18,8 @@ module Api::Controllers::Users
 
     def create_home_page(user)
       text = "Skeleton home page. Edit it to make like you want it to be.\n\n"
-      text << "xref::227[Manuscripta User Manual]\n\n"
-      text << "xref::152[Asciidoc Guide]\n\n"
+      # text << "xref::227[Manuscripta User Manual]\n\n"
+      # text << "xref::152[Asciidoc Guide]\n\n"
       CreateHomePage.new(user, text).call
     end
 
