@@ -93,5 +93,16 @@ class User
     self.acls.include? name
   end
 
+  # temporary
+
+  def self.make_home_pages
+    text = "Skeleton home page. Edit it to make like you want it to be.\n\n"
+    # text << "xref::227[Manuscripta User Manual]\n\n"
+    # text << "xref::152[Asciidoc Guide]\n\n"
+    UserRepository.all.each do |user|
+      CreateHomePage.new(user, text).call
+    end
+  end
+
 
 end
