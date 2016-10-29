@@ -34,6 +34,11 @@ module Api::Controllers::Documents
       if @access_granted
         result = ReadDocument.new(params['id'], @user).call
         HotListManager.new(@user, 'push', result.document).call.hotlist
+        dict = @user.dict || {}
+        dict['last_document_id'] = params['id']
+        dict['last_document_title'] = result.document.title
+        @user.dict = dict
+        UserRepository.update @user
       else
         result = ReadDocument.new(params['id'], nil).call
       end
