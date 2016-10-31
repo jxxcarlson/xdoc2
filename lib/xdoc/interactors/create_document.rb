@@ -44,7 +44,9 @@ class CreateDocument
     author = UserRepository.find @author_id
     document.owner_id = author.id
     document.author_name = author.username
-    document.text = @params[:text] || "(Dummy text for ew document #{document.title})"
+    default_text = "(Dummy text for new document _#{document.title})_.\n\n"
+    default_text << "Select `Tools > View document` or type `ctrl-V` to leave the editor"
+    document.text = @params[:text] || default_text
     document.kind = author.get_preference('doc_format') || 'asciidoc'
     if document.kind == 'text'
       document.rendered_text = document.text

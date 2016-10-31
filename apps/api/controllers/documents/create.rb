@@ -12,7 +12,7 @@ module Api::Controllers::Documents
       # params.env['router.params']
       # Example: options = {"child"=>false, "position"=>"null"}
       output_hash = {}
-      output_hash['title'] = params['title']
+      output_hash['title'] = params['title'] || 'Untitled Document'
       output_hash['options'] = params['options']
       output_hash['current_document_id'] = params['current_document_id']
       output_hash['parent_document_id'] = params['parent_document_id']
