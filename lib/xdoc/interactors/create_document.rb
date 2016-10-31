@@ -44,10 +44,11 @@ class CreateDocument
     author = UserRepository.find @author_id
     document.owner_id = author.id
     document.author_name = author.username
-    default_text = "Dummy text for new document _#{document.title}_.\n\n"
-    default_text << "Select `Tools > View document` or type `ctrl-V` to leave the editor\n\n"
-    default_text << "See xref::227[User Manual] and the xref::152[Asciidoc Guide] for info on editing.\n\n"
-    default_text << "image꞉꞉61[ ]\n\n"
+    default_text = "== Dummy text\n\nA stitch in time saves _nine_.\n\n"
+    default_text << "== Tips\n\nSelect `Tools > View document` or type `ctrl-V` to leave the editor\n\n"
+    default_text << "See the xref::227[User Manual] and the xref::152[Asciidoc Guide] for info on writing documents in Manuscripta.io.\n\n"
+    default_text << "== Examples\n\nimage::61[]\n\n*Groceries*\n\n. Bread\n. Milk\n. Cereal\n\n"
+    default_text << "The http://nytimes.com[New York Times] has excellent crossword puzzles."
 
     document.text = @params[:text] || default_text
     document.kind = author.get_preference('doc_format') || 'asciidoc'
