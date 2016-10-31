@@ -44,8 +44,11 @@ class CreateDocument
     author = UserRepository.find @author_id
     document.owner_id = author.id
     document.author_name = author.username
-    default_text = "(Dummy text for new document _#{document.title})_.\n\n"
-    default_text << "Select `Tools > View document` or type `ctrl-V` to leave the editor"
+    default_text = "Dummy text for new document _#{document.title}_.\n\n"
+    default_text << "Select `Tools > View document` or type `ctrl-V` to leave the editor\n\n"
+    default_text << "See xref::227[User Manual] and the xref::152[Asciidoc Guide] for info on editing.\n\n"
+    default_text << "image꞉꞉61[ ]\n\n"
+
     document.text = @params[:text] || default_text
     document.kind = author.get_preference('doc_format') || 'asciidoc'
     if document.kind == 'text'
