@@ -17,11 +17,13 @@ module Api::Controllers::Documents
       can_edit = permissions.include? 'edit'
 
       if @access.valid && can_edit
+        puts "DEBUG update doc: access granted to user #{@access.username}"
+        puts "DEBUG update doc: request.query_string #{request.query_string}"
         result = UpdateDocument.new(params, request.query_string, {username: @access.username}).call
         if result.status == 'success'
           self.body = result.hash
         else
-          self.body = error_document_response('Sorry, something went wrong')
+          self.body = error_document_response('Sorry, unable to update document')
         end
       else
         self.body = error_document_response('Sorry, you do not have access to that document')

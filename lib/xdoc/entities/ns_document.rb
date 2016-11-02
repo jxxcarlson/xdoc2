@@ -178,7 +178,7 @@ class NSDocument
 
   def update_from_hash(hash)
 
-    puts "update_from_hash: #{hash.to_s}"
+    puts "DEBUG update doc: update_from_hash: #{hash.to_s}"
 
     self.title = hash['title'] if hash['title']
 
