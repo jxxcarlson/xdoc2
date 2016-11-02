@@ -48,6 +48,8 @@ class UpdateDocument
 
     if @document
 
+      puts "DEBUG update_document: id = #{@document.id}"
+
       @document.update_from_hash(@params)
 
       use_latex_macros
