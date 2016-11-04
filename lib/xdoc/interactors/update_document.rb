@@ -44,11 +44,29 @@ class UpdateDocument
     @updated_document = DocumentRepository.update @document
   end
 
+  def update_parent_ref_in_children
+    puts "In document #{@document.id}, title changes: #{@document.title} => #{@params['title']}"
+    documentArray = @document.links['documents']
+    return if documentArray == nil
+    documentArray.each do |item|
+      id = item['id']
+      # puts id
+      doc = DocumentRepository.find id
+      doc.links['parent']['title'] = @params['title']
+      puts "#{id}: #{doc.links['parent']['title']} => #{@params['title']}"
+      DocumentRepository.update doc
+    end
+  end
+
   def update
 
     if @document
 
       puts "DEBUG update_document: id = #{@document.id}"
+
+      if @params['title'] != @document.title && @document.subdocuments.length > 0
+        update_parent_ref_in_children
+      end
 
       @document.update_from_hash(@params)
 
