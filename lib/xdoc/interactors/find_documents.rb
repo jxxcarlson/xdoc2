@@ -89,7 +89,7 @@ class FindDocuments
   def user_title_search(arg)
     username, title = arg.split('.')
     user = UserRepository.find_by_username(username)
-    @documents = DocumentRepository.find_by_owner_and_fuzzy_title(user.id, title)
+    @documents = DocumentRepository.find_by_owner_and_fuzzy_title(user.id, title.downcase)
   end
 
   # command: 'shared=user,group'
@@ -111,7 +111,7 @@ class FindDocuments
   end
 
   def title_search(arg)
-    @documents = DocumentRepository.fuzzy_find_by_title(arg)
+    @documents = DocumentRepository.fuzzy_find_by_title(arg.downcase)
   end
 
   def id_search(arg)
@@ -123,7 +123,7 @@ class FindDocuments
   end
 
   def tag_search(arg)
-    @documents = DocumentRepository.find_by_tag(arg)
+    @documents = DocumentRepository.find_by_tag(arg.downcase)
   end
 
   def random_search(percentage)
