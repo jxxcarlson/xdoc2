@@ -126,6 +126,10 @@ class FindDocuments
     @documents = DocumentRepository.find_by_tag(arg.downcase)
   end
 
+  def home_search_by_tag(arg)
+    @documents = DocumentRepository.find_by_tag(arg.downcase).select{ |doc| doc.identifier =~ /home/ }
+  end
+
   def random_search(percentage)
     n = ENV['DEFAULT_DOCUMENT_ID']
     @documents = DocumentRepository.random_sample(percentage).select{ |doc| doc.id != n && doc.public }[0..50]
@@ -149,6 +153,8 @@ class FindDocuments
         id_search(arg)
       when 'tag'
         tag_search(arg)
+      when 'home'
+        home_search_by_tag(arg)
       when 'random'
         random_search(arg)
     end
