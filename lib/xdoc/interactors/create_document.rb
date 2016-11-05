@@ -39,18 +39,38 @@ class CreateDocument
     end
   end
 
-  def create
-    document = NSDocument.new(@params)
-    author = UserRepository.find @author_id
-    document.owner_id = author.id
-    document.author_name = author.username
+  def default_text
     default_text = "== Dummy text\n\nA stitch in time saves _nine_.\n\n"
     default_text << "== Tips\n\nSelect `Tools > View document` or type `ctrl-V` to leave the editor\n\n"
     default_text << "See the xref::227[User Manual] and the xref::152[Asciidoc Guide] for info on writing documents in Manuscripta.io.\n\n"
     default_text << "== Examples\n\nimage::61[]\n\n*Groceries*\n\n. Bread\n. Milk\n. Cereal\n\n"
     default_text << "The http://nytimes.com[New York Times] has excellent crossword puzzles."
+    default_text << "\n\n`You wil see this default document text the first three times you craete a document.`"
+  end
 
-    document.text = @params[:text] || default_text
+  def update_documents_created_count(author)
+    dict = author.dict || {}
+    documents_created = dict['documents_created'] || 0
+    documents_created += 1
+    dict['documents_created'] = documents_created
+    author.dict = dict
+    UserRepository.update author
+    documents_created
+  end
+
+  def create
+    document = NSDocument.new(@params)
+    author = UserRepository.find @author_id
+    document.owner_id = author.id
+    document.author_name = author.username
+
+    number_of_documents_created = update_documents_created_count(author)
+    if number_of_documents_created <= 3
+      text = default_text
+    else
+      text = ''
+    end
+    document.text = @params[:text] || text
     document.kind = author.get_preference('doc_format') || 'asciidoc'
     if document.kind == 'text'
       document.rendered_text = document.text
