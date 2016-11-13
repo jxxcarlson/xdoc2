@@ -15,6 +15,7 @@ module Api::Controllers::Documents
     end
 
     def call(_params)
+      start_time = Time.now
       puts "API: find"
 
       ## Get access token from request headers and compute @access
@@ -41,6 +42,9 @@ module Api::Controllers::Documents
       # puts "\n\nfirst_document::: #{result2['first_document']['title']}\n\n"
 
       self.body = result
+      finish_time = Time.now
+      elapsed_time = finish_time - start_time
+      puts "Find controller [#{request.query_string}], elapsed_time = #{elapsed_time}"
     end
 
 

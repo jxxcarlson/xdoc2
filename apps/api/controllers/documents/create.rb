@@ -10,6 +10,7 @@ module Api::Controllers::Documents
 
     def parameters
       # params.env['router.params']
+      puts "CREATE DOCUMENT ROUTER PARAMS: #{params.env['router.params']}"
       # Example: options = {"child"=>false, "position"=>"null"}
       output_hash = {}
       output_hash['title'] = params['title'] || 'Untitled Document'

@@ -30,6 +30,7 @@ module Api::Controllers::Documents
     end
 
     def call(params)
+      start_time = Time.now
       check_user_and_access
       if @access_granted
         result = ReadDocument.new(params['id'], @user).call
@@ -45,6 +46,10 @@ module Api::Controllers::Documents
       reply_hash = result.reply.to_h
       report(reply_hash)
       self.body = reply_hash.to_json
+
+      finish_time = Time.now
+      elapsed_time = finish_time - start_time
+      puts "Read controller [id = #{params['id']}], elapsed_time = #{elapsed_time}"
     end
 
     def verify_csrf_token?

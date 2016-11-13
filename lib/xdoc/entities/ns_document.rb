@@ -270,6 +270,15 @@ class NSDocument
     names
   end
 
+  def unlink_from_parent
+    # remove oneself from parent
+    self.parent.remove_child(self) if self.parent
+
+    # remove parent
+    self.remove_parent
+  end
+
+  # remove from parent and remove children
   def unlink
     # remove oneself from parent
     self.parent.remove_child(self) if self.parent
