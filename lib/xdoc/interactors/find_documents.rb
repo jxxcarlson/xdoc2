@@ -112,6 +112,8 @@ class FindDocuments
 
   def title_search(arg)
     @documents = DocumentRepository.fuzzy_find_by_title(arg.downcase)
+    document_names = @documents.map{ |doc| doc.title}
+    puts "search results: #{document_names}"
   end
 
   def id_search(arg)
