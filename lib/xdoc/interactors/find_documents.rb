@@ -137,6 +137,11 @@ class FindDocuments
     n = ENV['DEFAULT_DOCUMENT_ID']
     @documents = DocumentRepository.random_sample(percentage).select{ |doc| doc.id != n && doc.public }[0..50]
   end
+
+  def share_search(arg)
+    @documents = DocumentRepository.find_by_user_name arg
+  end
+
   def search(query)
     @command, arg = query
     case @command
@@ -160,6 +165,8 @@ class FindDocuments
         home_search_by_tag(arg)
       when 'random'
         random_search(arg)
+      when 'share'
+        share_search(arg)
     end
     @document_hash_array = @documents.map { |document| document ? document.short_hash : 'null'}.select{|x| x != 'null'}
   end
@@ -243,7 +250,10 @@ class FindDocuments
   def apply_permissions
     if @access == nil || @access.username == nil
       @queries << ["scope", "public"]
-    else
+      return
+    end
+
+    if @queries[0][0] != 'share'
       @queries << ["user.public", @access.username]
     end
   end

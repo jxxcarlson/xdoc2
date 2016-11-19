@@ -47,6 +47,15 @@ class DocumentRepository
     end
   end
 
+
+  def self.find_by_user_name(user_name)
+    owner = UserRepository.find_by_username user_name
+    return [] if owner == nil
+    query do
+      where(owner_id: owner.id)
+    end
+  end
+
   def self.find_by_tag(tag)
     self.db.fetch("SELECT id from documents WHERE tags @> '{#{tag}}';").map{ |item| DocumentRepository.find item[:id]}
   end
