@@ -139,7 +139,22 @@ class FindDocuments
   end
 
   def share_search(arg)
+    username = @access.username
     @documents = DocumentRepository.find_by_user_name arg
+    shared_documents = []
+    @documents.each do |doc|
+      acls = doc.acls
+      acls.each do |acl_name|
+        acl = AclRepository.find_by_name acl_name
+        permission = acl.contains_member username
+        if permission
+          shared_documents << doc
+          break
+        end
+      end
+    end
+    @documents = shared_documents
+    puts "Shared documents = #{@documents.map{ |doc| doc.title}}"
   end
 
   def search(query)
