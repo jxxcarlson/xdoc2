@@ -147,6 +147,7 @@ class FindDocuments
       acls.each do |acl_name|
         acl = AclRepository.find_by_name acl_name
         permission = acl.contains_member username
+        puts "Share processing: #{acl_name}, #{doc.title}, #{permission}"
         if permission
           shared_documents << doc
           break
