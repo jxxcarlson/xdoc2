@@ -442,6 +442,10 @@ class NSDocument
     dict['acl'] || dict[:acl] || []
   end
 
+  def has_an_acl
+    self.acls.count > 0
+  end
+
   def has_acl(name)
     self.acls.include? name
   end

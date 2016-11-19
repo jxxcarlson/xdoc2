@@ -52,6 +52,7 @@ class FindDocuments
 
   def parse
     @queries = @query_string.split('&').map{ |item| item.split('=')}
+    puts "QUERIES: #{@queries}"
   end
 
   ######## SEARCH ########
