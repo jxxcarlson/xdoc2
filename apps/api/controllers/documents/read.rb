@@ -25,7 +25,8 @@ module Api::Controllers::Documents
       if @user
         puts "API read: #{doc[:title]}, user: #{@user.username}"
       else
-        puts "API read: #{doc[:title]}, user: anonymoous"
+        # puts "API read: #{doc[:title]}, user: anonymous, text = \n\n#{doc[:text]}\n\n   "
+        puts "API read: #{doc[:title]}, user: anonymous"
       end
     end
 
