@@ -16,7 +16,7 @@ module Api::Controllers::Documents
 
     def call(_params)
       start_time = Time.now
-      puts "API: find"
+      puts "API: find = #{request.query_string}"
 
       ## Get access token from request headers and compute @access
       token = request.env["HTTP_ACCESSTOKEN"]
