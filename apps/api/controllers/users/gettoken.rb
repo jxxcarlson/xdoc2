@@ -7,9 +7,9 @@ module Api::Controllers::Users
 
 
     def call(params)
-      puts "Gettoken called"
       result = AccessToken.new(username: params[:id], password: request.query_string).call
       user = UserRepository.find_by_username params[:id]
+      puts "Gettoken called, User = ${user}"
       if user == nil
         self.body = {:status => 'error'}
       else

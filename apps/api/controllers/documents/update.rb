@@ -18,10 +18,12 @@ module Api::Controllers::Documents
 
       if @access.valid && can_edit
         puts "DEBUG update doc: access granted to user #{@access.username}"
-        puts "DEBUG update doc: request.query_string #{request.query_string}"
+        puts "DEBUG update doc: request.query_string #{request.query_string}"''
+        ## puts "REQUEST FOR UPDATE: #{params['text']}"
         result = UpdateDocument.new(params, request.query_string, {username: @access.username}).call
         if result.status == 'success'
           self.body = result.hash
+          ## puts("RESULT OF UPDATE: #{self.body}")
         else
           self.body = error_document_response('Sorry, unable to update document')
         end

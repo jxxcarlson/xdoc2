@@ -7,19 +7,19 @@ module Api
     configure do
       # https://gitter.im/hanami/chat/archives/2016/02/12
       # Include gem 'rack-cors', :require => 'rack/cors'
-      middleware.use Rack::Cors do
-        allow do
-          origins 'localhost:8081', # express web server
-                  # 'localhost:4000',
-                  'jxxmbp.local:3000', 'localhost:3000', 'localhost:4200', '127.0.0.1:8875', '127.0.0.1:3000', '0.0.0.0:3000', 'localhost:8087',
-                  'manuscripta.herokuapp.com', 'www.manuscripta.io'# angular clients
-                  # '0.0.0.0:3000', # angular client
-                  # '127.0.0.1:9000', '127.0.0.1:8081', '127.0.0.1:4000', '0.0.0.0:4000'
-          # origins 'localhost:8081', '127.0.0.1:9000', '0.0.0.0:9000'
-          # origins '*'
-          resource '*', headers: :any, methods: [:get, :delete, :post, :patch, :options]
+        middleware.use Rack::Cors do
+          allow do
+            origins 'localhost:8081', # express web server
+                    # 'localhost:4000',
+                    'jxxmbp.local:3000', 'localhost:3000', 'localhost:4200', '127.0.0.1:8875', '127.0.0.1:3000', '0.0.0.0:3000', 'localhost:8087',
+                    'manuscripta.herokuapp.com', 'www.manuscripta.io'# angular clients
+                    # '0.0.0.0:3000', # angular client
+                    # '127.0.0.1:9000', '127.0.0.1:8081', '127.0.0.1:4000', '0.0.0.0:4000'
+            # origins 'localhost:8081', '127.0.0.1:9000', '0.0.0.0:9000'
+            # origins '*'
+            resource '*', headers: :any, methods: [:get, :delete, :post, :patch, :options]
+          end
         end
-      end
 
       ##
       # BASIC
