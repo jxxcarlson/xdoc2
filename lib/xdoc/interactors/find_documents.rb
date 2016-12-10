@@ -265,6 +265,7 @@ class FindDocuments
   end
 
   def apply_permissions
+    puts "QQQ: @access=#{JSON.stringify(@access)}"
     if @access == nil || @access.username == nil
       @queries << ["scope", "public"]
       return
