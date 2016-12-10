@@ -305,12 +305,15 @@ class FindDocuments
     normalize
     query = @queries.shift
     search(query)
+    puts "QQQ document hash array BEFORE filter: #{@document_hash_array.count}"
     filter_hash_array
+    puts "QQQ document hash array AFTER filter: #{@document_hash_array.count}"
     trim_random_sample
     handle_empty_search_result
     filter_documents
     get_first_document
     @document_count = @documents.count
+    puts "QQQ: document count = #{@document_count}"
   end
 end
 
