@@ -244,6 +244,7 @@ class FindDocuments
 
   def filter_hash_array
     @queries.each do |query|
+      puts "QQQ, filter, query = #{query}"
       @document_hash_array = apply_filter(query, @document_hash_array)
     end
     @document_hash_array = @document_hash_array.select(&not_deleted_filter)
