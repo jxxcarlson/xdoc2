@@ -20,6 +20,7 @@ module Api::Controllers::Documents
 
       ## Get access token from request headers and compute @access
       token = request.env["HTTP_ACCESSTOKEN"]
+      puts "in search access token = #{token}"
       @access = GrantAccess.new(token).call
 
       if request.query_string =~ /deleted=/
@@ -45,7 +46,6 @@ module Api::Controllers::Documents
       finish_time = Time.now
       elapsed_time = finish_time - start_time
       puts "Find controller [#{request.query_string}], elapsed_time = #{elapsed_time}"
-      puts "Find controller result: #{result}"
     end
 
 

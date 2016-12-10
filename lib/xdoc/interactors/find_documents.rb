@@ -44,7 +44,6 @@ class FindDocuments
 
   def initialize(query_string, access)
     @query_string = query_string
-    puts "QQQ: query_string = #{@query_string}"
     @access = access
     @documents = []
     @status = 400
@@ -113,8 +112,8 @@ class FindDocuments
 
   def title_search(arg)
     @documents = DocumentRepository.fuzzy_find_by_title(arg.downcase)
-    document_names = @documents.map{ |doc| doc.title}
-    puts "search results: #{document_names}"
+    # document_names = @documents.map{ |doc| doc.title}
+    # puts "search results: #{document_names}"
   end
 
   def id_search(arg)
@@ -265,7 +264,6 @@ class FindDocuments
   end
 
   def apply_permissions
-    puts "QQQ: @access username = #{@access.username}"
     if @access == nil || @access.username == nil
       @queries << ["scope", "public"]
       return
@@ -307,15 +305,12 @@ class FindDocuments
     normalize
     query = @queries.shift
     search(query)
-    puts "QQQ document hash array BEFORE filter: #{@document_hash_array.count}"
     filter_hash_array
-    puts "QQQ document hash array AFTER filter: #{@document_hash_array.count}"
     trim_random_sample
     handle_empty_search_result
     filter_documents
     get_first_document
     @document_count = @documents.count
-    puts "QQQ: document count = #{@document_count}"
   end
 end
 

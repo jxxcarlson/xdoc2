@@ -19,6 +19,7 @@ module Api::Controllers::Documents
       if @access.valid && can_edit
         puts "DEBUG update doc: access granted to user #{@access.username}"
         puts "DEBUG update doc: request.query_string #{request.query_string}"''
+        ## puts "QQQ: update, token = #{@access}"
         ## puts "REQUEST FOR UPDATE: #{params['text']}"
         result = UpdateDocument.new(params, request.query_string, {username: @access.username}).call
         if result.status == 'success'
