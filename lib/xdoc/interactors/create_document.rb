@@ -24,19 +24,25 @@ class CreateDocument
     @params = params
     # puts "CreateDocument, params: #{params.env['router.params']}"
     # Example: options = {"child"=>false, "position"=>"null"}
+    puts "INITIALIZE interactor CreateDocument"
     puts "  -- title: #{params['title']}"
-    puts "  -- options: #{params['options']}"
+    puts "  -- (1) options from params: #{params['options'].inspect}"
+    puts "  -- (2) options from @params: #{@params['options'].inspect}"
+    puts "  -- (3a) child from @params: #{@params['options']['child']}"
+    puts "  -- (3b) position from @params: #{@params['options']['position']}"
     puts "  -- current_document_id: #{params['current_document_id']}"
     puts "  -- parent_document_id: #{params['parent_document_id']}"
     puts "  -- text: #{params['text']}"
 
     @author_id = author_id
     opts = params['options'] || ""
-    if opts.length < 5
-      @options = {}
-    else
+
+    if opts.class == String
       @options = JSON.parse(opts)
+    else
+      @options = opts
     end
+    puts "CreateDocument INTERACTOR -- @options: #{@options.inspect}"
   end
 
   def default_text
@@ -103,9 +109,11 @@ class CreateDocument
 
     if @options['child'] == true
 
+      puts "Boss, you say 'child is true', so I will attach this document"
+
       @parent_document = DocumentRepository.find @params['current_document_id']
       if @parent_document
-        puts "I am going attach a new sibling #{@new_document.title } of #{@parent_document.title}"
+        puts "I am going attach a new child #{@new_document.title } of #{@parent_document.title}"
         @parent_document.adopt_child @new_document
         DocumentRepository.update @parent_document
         puts "CreateDocument: attached #{@new_document.title} to #{@parent_document.title}"

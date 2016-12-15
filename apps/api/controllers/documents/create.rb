@@ -12,11 +12,14 @@ module Api::Controllers::Documents
       # params.env['router.params']
       puts "CREATE DOCUMENT ROUTER PARAMS: #{params.env['router.params']}"
       # Example: options = {"child"=>false, "position"=>"null"}
+      # options = {"child"=>true|false, "position"=>null|above|below}
+      # position = null if child = false // actually, position is ignored in this case
       output_hash = {}
       output_hash['title'] = params['title'] || 'Untitled Document'
       output_hash['options'] = params['options']
       output_hash['current_document_id'] = params['current_document_id']
       output_hash['parent_document_id'] = params['parent_document_id']
+      puts "output_hash: #{output_hash}"
       output_hash
     end
 
@@ -53,6 +56,7 @@ module Api::Controllers::Documents
       end
 
       puts "@reply = #{@repy}"
+      puts "REPLY TO CREATE DOCUMENT: #{@reply}"
       self.body = @reply.to_json
 
     end
