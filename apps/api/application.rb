@@ -10,7 +10,7 @@ module Api
         middleware.use Rack::Cors do
           allow do
             origins 'localhost:8081', # express web server
-                    # 'localhost:4000',
+                     'home.noteshareblog.io/manuscripta2c', 'home.noteshareblog.io',
                     'jxxmbp.local:3000', 'localhost:3000', '127.0.0.1:8080', 'manuscripta-deploy.herokuapp.com',  
                     'localhost:4200', '127.0.0.1:8875', '127.0.0.1:3000', '0.0.0.0:3000', 'localhost:8087',
                     'manuscripta.herokuapp.com', 'www.manuscripta.io'# angular clients
